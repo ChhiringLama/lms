@@ -15,3 +15,6 @@ server/uploads/
 
 # Ignore log files
 *.log
+
+
+TimeStamp.txt
