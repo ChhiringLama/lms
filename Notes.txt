@@ -1,0 +1,170 @@
+--> lamachhiring
+--> 123123
+
+1---Cookie and JWT:
+    The cookie() method in index.js is used to send a cookie from the server to the client.
+    In this case, it sets a cookie named "token" that contains the JWT (JSON Web Token) 
+    for authentication.
+
+    When a user logs in, the server generates a JWT using jwt.sign.
+    The JWT is sent to the client as an HTTP-only cookie (not accessible via JavaScript
+    on the client for security).
+
+    In Utils/ generateToken:
+    You are signing the token with the user's MongoDB _id as userId in the JWT payload.
+
+    In userController.js:
+    generateToken() both sets the cookie and sends the JSON response. Your generateToken function 
+    creates a JWT and sends the response back to the client, just like res.status().json() would.
+    It sets the JWT as a cookie and then sends a JSON response.
+
+
+2--Slices in React
+    In React-Redux, a slice typically represents a single feature or domain of your application's 
+    state (for example: user, auth, cart, etc.). Each slice contains its own state,  reducers, and
+    actions related to that feature.
+
+
+3--RTK Query  
+    RTK Query is a data fetching and caching tool built into Redux Toolkit.  
+    It allows you to define API endpoints and automatically generates hooks for performing queries 
+    and mutations in your React components. RTK Query manages caching, loading, and error states, 
+    making API integration much simpler and more efficient.
+
+4--CORS  
+    CORS (Cross-Origin Resource Sharing) is a security feature implemented by browsers to restrict
+    web pages from making requests to a different domain than the one that served the web page.  
+    On the backend, enabling CORS (using middleware like app.use(cors({...}))) allows your frontend 
+    (React app) to communicate with your backend (Express server) even if they are running on different ports or domains.
+
+5--How the client communicates with the server  
+    The client (React app) sends HTTP requests to the backend server using tools like fetch, axios,
+    or RTK Query. The backend (Express server) receives these requests, processes them
+    (e.g., reading/writing to a database), and sends back responses.  
+    CORS must be enabled on the backend for the frontend to communicate successfully. RTK Query endpoints 
+    in the client handle sending requests and receiving responses, enabling full CRUD operations between the client and server.
+
+
+
+
+
+AuthSlice, AuthApi and a Login route
+
+1, authSlice holds the current user state (user and isAuthenticated) in your Redux store.
+
+2, When you use the useLoginUserMutation hook (from authApi) and call it, it sends a POST request to /login on your backend.
+
+3, The backend processes the login and responds with the user data (and sets the cookie).
+
+In your authApi, the onQueryStarted function for loginUser runs after a successful login.
+It dispatches: 
+dispatch(userLoggedIn({ user: result.data.user, isAuthenticated: true }));
+
+This updates the Redux state in authSlice with the new user info.
+
+Any component that uses the Redux state (via hooks like useSelector or RTK Query hooks) will now have access to the updated user data.
+
+Summary:
+
+authSlice is the single source of truth for user authentication state.
+After a successful login, the Redux state is updated with the user info from the backend response.
+All components using this state will reactively update.
+
+
+------------------------------------------- Redux store persistence in store .js -----------------------
+
+const initializeApp = async () => {
+  await appStore.dispatch(
+    authApi.endpoints.loadUser.initiate({}, { forceRefetch: true })
+  );
+};
+
+initializeApp() 
+
+
+Forces a call to your loadUser API endpoint (usually /api/me or /api/profile) when the app starts, 
+even if the data might already exist in the cache. 
+
+It triggers Redux Toolkit Query to run the loadUser query and populate the Redux store with the latest user data.
+Because RTK Query doesn’t persist Redux state across page refreshes by default.
+When you refresh the page Redux state is lost,  Your app "forgets" that the user is logged in
+
+Calling initializeApp() right after app starts ensures:
+It loads the user's data again
+Your Redux state (e.g. authSlice) gets the user info back in
+
+---------------------------------------------- RTK lifecycle query ----------------------------------
+async onQueryStarted(_, { queryFulfilled, dispatch }) {
+  try {
+    const result = await queryFulfilled;
+    dispatch(
+      userLoggedIn({ user: result.data.user, isAuthenticated: true })
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+onQueryStarted runs when the loadUser query is triggered
+It waits for the query to finish: await queryFulfilled
+If the query succeeds, it dispatches:
+userLoggedIn({ user: result.data.user, isAuthenticated: true });
+to your authSlice
+If it fails (e.g., user not logged in), it catches the error.
+
+
+
+
+
+
+6:57:00 
+
+
+This is an arrow function with an implicit return of an object.
+
+() => ({ key: "value" })
+That’s the same as:
+
+function() {
+  return { key: "value" };
+}
+
+in rtk query we are doing this 
+
+ endpoints:(builder)=>({
+        createCourse:builder.mutation({
+            query:(formData)=>({
+
+            })
+        })
+    })
+this means, createCourse is defined using mutation and it will get object returning query function as config
+
+
+7:20:30 - We ran into stale json data problem 
+RTK Query is working as intended here. It fetches the data for getCreatorCourseQuery once and caches it. When you navigate back to the CourseTable component, 
+RTK Query sees the existing cached data and serves that to avoid a redundant network request. It doesn't know that the createCourse mutation should invalidate that cache.
+To fix this, you need to tell RTK Query that the createCourse mutation affects the data fetched by getCreatorCourseQuery. You can do this by using cache tags. 
+
+You are absolutely correct. Every time the createCourse mutation is successfully executed, it will invalidate the cache for any query that is "tagged" with 'Courses', which in this case is getCreatorCourse. This triggers an automatic refetch for that query, ensuring your CourseTable always has the latest data.
+You're also right to think about refetch(), and it's a great question that gets to the heart of why RTK Query is designed this way.
+You could use refetch(), but as you suspected, it leads to complications. Here’s a comparison:
+
+
+
+
+Cloudinary's  Public ids 
+It is the unique ID assigned to the file when it is uploaded to Cloudinary.
+It is used to reference the file in Cloudinary's storage system.
+You can use the publicId to:
+Retrieve the file.
+Perform transformations (e.g., resizing, cropping).
+Delete the file from Cloudinary.
+
+If you upload a video to Cloudinary, the response might look like this:
+{
+  "asset_id": "1234567890abcdef",
+  "public_id": "my-folder/video123",
+  "url": "http://res.cloudinary.com/demo/video/upload/v114567890/my-folder/video123.mp4",
+  "secure_url": "https://res.cloudinary.com/demo/video/upload/5567890/my-folder/video123.mp4"
+}

@@ -1,0 +1,32 @@
+.listContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.listItem {
+  margin-bottom: 14px;
+  display: flex;
+  padding: 11px 14px;
+  background-color: #f0f0f0;
+  justify-content: space-between;
+  align-items: center;
+
+  border-radius: 7px;
+}
+
+
+.itemsText {
+  color: #242222;
+  font-weight: 500;
+}
+
+.itemsIcon {
+  transition: 0.6s;
+  cursor: pointer;
+  padding: 5px 28px;
+  font-weight: 400;
+
+  & :hover {
+    color: #242222;
+  }
+}
