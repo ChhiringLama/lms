@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PlayCircle } from "lucide-react";
 import BuyCourseButton from "@/components/ui/BuyCourseButton";
 import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
 import { useEffect, useState } from "react";
+import LectureAccordion from "@/components/ui/LectureAccordion";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
@@ -37,8 +37,6 @@ const CourseDetail = () => {
     }
   }, [data]);
 
-  const previewFree = true;
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -63,12 +61,12 @@ const CourseDetail = () => {
           <img
             src={course?.courseThumbnail}
             alt={course?.courseTitle}
-            className="w-64 h-40 object-cover rounded-lg shadow-md"
+            className="w-96 h-64 object-cover rounded-lg shadow-md"
           />
           <div className="space-y-4">
             <h1 className="font-funnel text-4xl font-bold text-white">{course?.courseTitle || "Course Title Here"}</h1>
-            <p className="text-xl text-white text-gray-200">{course?.subTitle || "Course subtitle, with something a bit longer than the course"}</p>
-            <p className="text-l text-white">
+            <p className="text-white text-gray-200">{course?.subTitle || "Course subtitle, with something a bit longer than the course"}</p>
+            <p className="text-sm text-white">
               Created by: <span className="font-semibold">{course?.creator?.name || "Creator name here"}</span>
             </p>
             <p className="text-sm text-white">
@@ -81,9 +79,9 @@ const CourseDetail = () => {
         </div>
       </div>
 
-      {/* Main Content Section */}
+ 
       <div className="flex flex-col md:flex-row gap-10 px-5 md:px-20 relative">
-        {/* Left Section */}
+ 
         <div className="flex-1 space-y-6">
           {/* Description */}
           <div>
@@ -91,8 +89,6 @@ const CourseDetail = () => {
               Description
             </h2>
             <p className="text-gray-600 text-justify" dangerouslySetInnerHTML={{ __html: course?.description }}>
-
-
             </p>
           </div>
 
@@ -102,21 +98,12 @@ const CourseDetail = () => {
               <CardTitle>
                 <h2>Course Contents</h2>
               </CardTitle>
-              <CardDescription>4 Lectures</CardDescription>
+              <CardDescription>
+                {(course?.lectures?.length || 0)} {((course?.lectures?.length || 0) === 1) ? "Lecture" : "Lectures"}
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {course?.lectures?.map((lecture, indx) => (
-                <div key={indx} className="flex items-center gap-3 text-sm">
-                  <span>
-                    {previewFree ? (
-                      <PlayCircle size={14} />
-                    ) : (
-                      <Lock size={14} />
-                    )}
-                  </span>
-                  <p>{lecture.lectureTitle}</p>
-                </div>
-              ))}
+            <CardContent className="space-y-4 p-0 m-0">
+              <LectureAccordion lectures={course?.lectures || []} />
             </CardContent>
           </Card>
         </div>

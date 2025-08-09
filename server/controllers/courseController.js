@@ -411,7 +411,7 @@ export const searchCourse = async (req, res) => {
   try {
     let { q = "", categories = [], sortByPrice = "" } = req.query;
 
-    // Normalize categories: support comma-separated string or array
+  
     if (typeof categories === "string" && categories.length > 0) {
       categories = categories.split(",").map((c) => c.trim());
     }
