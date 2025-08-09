@@ -244,12 +244,14 @@ export const getCourseLecture = async (req, res) => {
 
 export const editLecture = async (req, res) => {
   try {
-    const { lectureTitle, videoInfo, isPreviewFree } = req.body;
+    const { lectureTitle, videoInfo, isPreviewFree, lectureDesc } = req.body;
     console.log("Response from edit lecture to check isPreviewFree");
     console.log(req.body);
 
     // videoInfo ma public id ra url cha
     const { courseId, lectureId } = req.params;
+
+    //Find the lecture in the database
     const lecture = await Lecture.findById(lectureId);
     if (!lecture) {
       return res.status(404).json({
@@ -257,13 +259,15 @@ export const editLecture = async (req, res) => {
       });
     }
 
+    //Delete the public and id if new video was submitted.
     if (videoInfo && lecture.publicId) {
       await deleteVideoCD(lecture.publicId);
     }
 
     //Update lecture
-    // Time stamp 10 : 18
+
     if (lectureTitle) lecture.lectureTitle = lectureTitle;
+    if (lectureDesc) lecture.lectureDesc = lectureDesc;
     if (videoInfo) {
       lecture.videoUrl = videoInfo.videoUrl;
       lecture.publicId = videoInfo.publicId;
@@ -272,7 +276,7 @@ export const editLecture = async (req, res) => {
 
     await lecture.save();
 
-    //Ensure the course stilll has the lecture id if it was not already added
+    //Ensure the course still has the lecture id if it was not already added
     const course = await Course.findById(courseId);
 
     if (course && course.lectures.includes(lectureId._id)) {
@@ -411,7 +415,7 @@ export const searchCourse = async (req, res) => {
   try {
     let { q = "", categories = [], sortByPrice = "" } = req.query;
 
-  
+
     if (typeof categories === "string" && categories.length > 0) {
       categories = categories.split(",").map((c) => c.trim());
     }
@@ -443,7 +447,7 @@ export const searchCourse = async (req, res) => {
       .populate({ path: "creator", select: "name photoUrl" })
       .sort(sortOptions);
 
-      console.log(courses);
+    console.log(courses);
 
     return res.status(200).json({
       success: true,

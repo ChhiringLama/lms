@@ -124,6 +124,24 @@ const CourseDetail = () => {
 
             </div>
 
+            {/* Lecture Description */}
+            {course?.lectures?.length > 0 && (
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <h3 className="font-semibold text-gray-800 mb-2">
+                  {course.lectures[0]?.lectureTitle || "Lecture Description"}
+                </h3>
+                <div className="text-sm text-gray-600">
+                  {course.lectures[0]?.lectureDesc ? (
+                    <div
+                      dangerouslySetInnerHTML={{ __html: course.lectures[0].lectureDesc }}
+                    />
+                  ) : (
+                    <p>No description available for this lecture.</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Price and CTA */}
             <div className="p-6 border border-gray-300 rounded-lg shadow-md space-y-4">
               <div className="font-funnel flex justify-center gap-3 items-center">

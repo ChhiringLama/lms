@@ -35,9 +35,9 @@ const LectureAccordion = ({ lectures = [] }) => {
             </button>
             {isOpen && (
               <div className="px-4 pb-4 text-sm text-gray-600">
-                {lecture?.description ? (
+                {lecture?.lectureDesc ? (
                   <div
-                    dangerouslySetInnerHTML={{ __html: lecture.description }}
+                    dangerouslySetInnerHTML={{ __html: lecture.lectureDesc }}
                   />
                 ) : (
                   <p>No description available.</p>

@@ -108,13 +108,14 @@ export const courseApi = createApi({
       query: ({
         lectureTitle,
         videoInfo,
+        lectureDesc,
         isPreviewFree,
         courseId,
         lectureId,
       }) => ({
         url: `/${courseId}/lecture/${lectureId}`,
         method: "PUT",
-        body: { lectureTitle, videoInfo, isPreviewFree },
+        body: { lectureTitle, videoInfo, isPreviewFree, lectureDesc },
       }),
       invalidatesTags: ["Lecture", "LectureList"],
     }),

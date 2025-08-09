@@ -140,11 +140,27 @@ const CourseProgress = () => {
               Your browser does not support the video tag.
             </video>
           </div>
-          <h4>{`Lecture ${course?.lectures?.findIndex(
+          <h4 className="text-xl font-semibold mb-4">{`Lecture ${course?.lectures?.findIndex(
             (lec) => lec?._id === (currentLecture?._id || initLecture?._id)
           ) + 1
             } : ${currentLecture?.lectureTitle || initLecture?.lectureTitle
             }`}</h4>
+          
+          {/* Lecture Description */}
+          <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <h5 className="font-medium text-gray-800 mb-3">Description</h5>
+            <div className="text-gray-600 text-sm leading-relaxed">
+              {currentLecture?.lectureDesc || initLecture?.lectureDesc ? (
+                <div
+                  dangerouslySetInnerHTML={{ 
+                    __html: currentLecture?.lectureDesc || initLecture?.lectureDesc 
+                  }}
+                />
+              ) : (
+                <p className="text-gray-500 italic">No description available for this lecture.</p>
+              )}
+            </div>
+          </div>
         </div>
         {/* Right: Lecture List */}
         <div className="flex-1 w-1/3 p-6 overflow-y-auto border-l border-gray-200 bg-white">

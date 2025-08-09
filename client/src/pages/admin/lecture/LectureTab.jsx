@@ -16,30 +16,25 @@ import {
   useRemoveLectureMutation,
 } from "@/features/api/courseApi";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { Lectern, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const LectureTab = () => {
   const [lectureTitle, setLectureTitle] = useState("");
+  const [lectureDesc, setLectureDesc] = useState("");
   const [uploadVideoInfo, setUploadVideoInfo] = useState(null);
   const [isFree, setIsFree] = useState(false);
   const [mediaProgress, setMediaProgress] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [hasVideo, setVideoStatus] = useState(false)
   const params = useParams();
   const { courseId, lectureId } = params;
-  const [
-    removeLecture,
-    { isLoading: removeLoading, isSuccess: removeSuccess },
-  ] = useRemoveLectureMutation();
-  const [
-    editLecture,
-    { isLoading: isEditLoading, isSuccess: isEditSuccess, error: editError },
-  ] = useEditLectureMutation();
-  const { data: lectureData } = useGetLectureByIdQuery(lectureId, {
-    skip: !lectureId,
-  });
+  const [removeLecture, { isLoading: removeLoading, isSuccess: removeSuccess },] = useRemoveLectureMutation();
+  const [editLecture, { isLoading: isEditLoading, isSuccess: isEditSuccess, error: editError },] = useEditLectureMutation();
+  const { data: lectureData } = useGetLectureByIdQuery(lectureId, { skip: !lectureId, });
+
 
   const removeLectureHandler = async () => {
     await removeLecture(lectureId);
@@ -51,6 +46,7 @@ const LectureTab = () => {
       lectureTitle: title,
       videoInfo: uploadVideoInfo,
       courseId,
+      lectureDesc,
       lectureId,
       isPreviewFree: isFree,
     });
@@ -93,7 +89,12 @@ const LectureTab = () => {
   useEffect(() => {
     if (lectureData) {
       setLectureTitle(lectureData.lecture.lectureTitle);
+      setLectureDesc(lectureData.lecture.lectureDesc)
       setIsFree(lectureData.lecture.isPreviewFree);
+      if (lectureData.lecture.videoUrl) {
+        setVideoStatus(true)
+      }
+
     }
   }, [lectureData]);
 
@@ -106,8 +107,8 @@ const LectureTab = () => {
     }
   }, [isEditSuccess, editError]);
 
-  useEffect(()=>{
-    if(removeSuccess){
+  useEffect(() => {
+    if (removeSuccess) {
       toast.success("Lecture removed successfully");
     }
   })
@@ -124,10 +125,10 @@ const LectureTab = () => {
             <Button variant="destructive" onClick={removeLectureHandler}>
               {
                 removeLoading ? <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Please await 
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please await
                 </> : "Remove Lecture"
               }
-              
+
             </Button>
           </div>
         </CardHeader>
@@ -142,9 +143,18 @@ const LectureTab = () => {
             ></Input>
           </div>
           <div className="my-5">
+            <Label>Lecture Description</Label>
+            <Input
+              type="text"
+              placeholder="EX: In This lecture youll learn about .... "
+              value={lectureDesc}
+              onChange={(e) => setLectureDesc(e.target.value)}
+            ></Input>
+          </div>
+          <div className="my-5">
             <Label>
               {" "}
-              Video <span className="text-red-500">*</span>
+              Video <span className="text-red-500 mb">*</span>
             </Label>
             <Input
               type="file"
@@ -152,6 +162,7 @@ const LectureTab = () => {
               className="w-fit"
               onChange={fileChangeHandler}
             ></Input>
+            <h6 className="text-red-500 font-bold text-sm mt-3">{hasVideo ? "Video is already set" : ""}</h6>
           </div>
           <div>
             <Switch
