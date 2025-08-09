@@ -8,7 +8,13 @@ export const courseApi = createApi({
     baseUrl: BASE_USER_API,
     credentials: "include",
   }),
-  tagTypes: ["Home-Courses", "Courses", "SingleCourse", "Lecture", "LectureList"],
+  tagTypes: [
+    "Home-Courses",
+    "Courses",
+    "SingleCourse",
+    "Lecture",
+    "LectureList",
+  ],
   endpoints: (builder) => ({
     createCourse: builder.mutation({
       query: ({ courseTitle, category, coursePrice }) => ({
@@ -18,6 +24,27 @@ export const courseApi = createApi({
       }),
       invalidatesTags: ["Courses"],
     }),
+    getSearchedCourses: builder.query({
+      query: ({ searchQuery = "", categories = [], sortByPrice = "" }) => {
+        // Build the query string
+        const q = typeof searchQuery === "string" ? searchQuery : "";
+        let queryString = `/search?q=${encodeURIComponent(q)}`;
+
+        if (Array.isArray(categories) && categories.length > 0) {
+          const categoriesString = categories.map(encodeURIComponent).join(",");
+          queryString += `&categories=${categoriesString}`;
+        }
+
+        if (sortByPrice) {
+          queryString += `&sortByPrice=${encodeURIComponent(sortByPrice)}`;
+        }
+
+        return {
+          url: queryString,
+          method: "GET",
+        };
+      },
+    }),
     getCreatorCourse: builder.query({
       query: () => ({
         url: "/",
@@ -25,14 +52,14 @@ export const courseApi = createApi({
       }),
       providesTags: ["Courses"],
     }),
-    getPublishedCourse:builder.query({
-       query: () => ({
+    getPublishedCourse: builder.query({
+      query: () => ({
         url: "/published-courses",
         method: "GET",
       }),
       providesTags: ["Home-Courses"],
     }),
-   
+
     editCourse: builder.mutation({
       query: ({ formData, courseId }) => ({
         url: `/${courseId}`,
@@ -42,7 +69,7 @@ export const courseApi = createApi({
       invalidatesTags: ["Courses", "SingleCourse"],
     }),
     removeCourse: builder.mutation({
-      query: ( courseId ) => ({
+      query: (courseId) => ({
         url: `/${courseId}`,
         method: "DELETE",
       }),
@@ -120,5 +147,6 @@ export const {
   useGetLectureByIdQuery,
   useRemoveLectureMutation,
   usePublishCourseMutation,
-  useGetPublishedCourseQuery
+  useGetPublishedCourseQuery,
+  useGetSearchedCoursesQuery,
 } = courseApi;

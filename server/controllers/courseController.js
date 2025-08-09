@@ -1,3 +1,4 @@
+import { populate } from "dotenv";
 import { Course } from "../models/courseModel.js";
 import { Lecture } from "../models/lectureModel.js";
 import {
@@ -111,8 +112,6 @@ export const editCourse = async (req, res) => {
     } = req.body;
     const courseThumbnail = req.file; // File from the request
 
-
-
     console.log("CourseThumbnail:", courseThumbnail);
 
     let course = await Course.findById(courseId);
@@ -218,7 +217,7 @@ export const createLecture = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "Failed to create lecture"
+      message: "Failed to create lecture",
     });
   }
 };
@@ -238,7 +237,7 @@ export const getCourseLecture = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "Failed to get course lectures"
+      message: "Failed to get course lectures",
     });
   }
 };
@@ -389,7 +388,10 @@ export const togglePublishCourse = async (req, res) => {
 
 export const getPublishedCourse = async (req, res) => {
   try {
-    const courses = await Course.find({ isPublished: true }).populate({path:"creator", select:"name photoUrl"});
+    const courses = await Course.find({ isPublished: true }).populate({
+      path: "creator",
+      select: "name photoUrl",
+    });
     if (!courses) {
       return res.status(404).json({
         message: "Courses not found",
@@ -402,6 +404,56 @@ export const getPublishedCourse = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       message: "Failed to get courses on home page",
+    });
+  }
+};
+export const searchCourse = async (req, res) => {
+  try {
+    let { q = "", categories = [], sortByPrice = "" } = req.query;
+
+    // Normalize categories: support comma-separated string or array
+    if (typeof categories === "string" && categories.length > 0) {
+      categories = categories.split(",").map((c) => c.trim());
+    }
+
+    // Create search criteria
+    const searchCriteria = {
+      isPublished: true,
+      $or: [
+        { courseTitle: { $regex: q, $options: "i" } },
+        { subTitle: { $regex: q, $options: "i" } },
+        { category: { $regex: q, $options: "i" } },
+      ],
+    };
+
+    // Filter by categories if provided
+    if (Array.isArray(categories) && categories.length > 0) {
+      searchCriteria.category = { $in: categories };
+    }
+
+    // Define sort options
+    const sortOptions = {};
+    if (sortByPrice === "low-to-high") {
+      sortOptions.coursePrice = 1; // Ascending order
+    } else if (sortByPrice === "high-to-low") {
+      sortOptions.coursePrice = -1; // Descending order
+    }
+
+    const courses = await Course.find(searchCriteria)
+      .populate({ path: "creator", select: "name photoUrl" })
+      .sort(sortOptions);
+
+      console.log(courses);
+
+    return res.status(200).json({
+      success: true,
+      courses: courses || [],
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "An error occurred while searching for courses.",
+      error,
     });
   }
 };
