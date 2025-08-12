@@ -1,120 +1,107 @@
 import Login from "./pages/Login";
 import "./App.css";
 
-import HeroSection from "./pages/student/HeroSection";
+import HeroSection from "./pages/HeroSection";
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
 import { RouterProvider } from "react-router";
-import Courses from "./pages/student/Courses";
-import Profile from "./pages/student/Profile";
+import Courses from "./pages/Courses";
+import Profile from "./pages/Profile";
 import MyLearning from "./pages/student/MyLearning";
-import Sidebar from "./pages/admin/Sidebar";
+import Sidebar from "./pages/Sidebar";
 import CourseTable from "./pages/admin/course/CourseTable";
-import Dashboard from "./pages/admin/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import AddCourse from "./pages/admin/course/AddCourse";
 import EditCourse from "./pages/admin/course/EditCourse";
 import CreateLecture from './pages/admin/lecture/CreateLecture'
 import EditLecture from "./pages/admin/lecture/EditLecture";
 import CourseDetail from "./pages/student/CourseDetail";
 import CourseProgress from "./pages/student/CourseProgress";
-import SearchPage from "./pages/student/SearchPage";
+import SearchPage from "./pages/SearchPage";
+
+// Simple redirect component
+const DashboardRedirect = () => {
+  return <Dashboard />;
+};
 
 const appRouter = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     children: [
+      // Public routes
       {
         path: "/",
-        element: (
-          <>
-            <HeroSection />,
-            <Courses />{" "}
-          </>
-        ),
+        element: <HeroSection />,
       },
       {
-        path: "login",
-        element: (
-          <>
-            <Login />,
-          </>
-        ),
+        path: "/login",
+        element: <Login />,
       },
       {
-        path: "my-learning",
-        element: (
-          <>
-            <MyLearning />,
-          </>
-        ),
+        path: "/browse-courses",
+        element: <Courses />,
       },
       {
-        path: "profile",
-        element: (
-          <>
-            <Profile />,
-          </>
-        ),
+        path: "/course/search",
+        element: <SearchPage />,
       },
       {
-        path: "course/search",
-        element: (
-          <>
-            <SearchPage />,
-          </>
-        ),
-      },
-
-      {
-
-        path: "course-detail/:courseId",
+        path: "/course-detail/:courseId",
         element: <CourseDetail />,
       },
 
+      // Unified Dashboard Route - Both students and instructors use this
       {
-
-        path: "course-progress/:courseId",
-        element: <CourseProgress />,
-      },
-
-
-
-      //Admin route starts from here
-
-
-      {
-        path: "admin",
+        path: "/dashboard",
         element: <Sidebar />,
         children: [
+          // Default dashboard route - will redirect based on role
           {
-            path: "courses",
-            element: <CourseTable />,
-
+            path: "",
+            element: <Dashboard />,
+          },
+          
+          // Student routes
+          {
+            path: "profile",
+            element: <Profile />,
           },
           {
-            path: "courses/create",
-            element: <AddCourse />,
-
+            path: "my-learning",
+            element: <MyLearning />,
           },
           {
-            //Dynamic routing
-            path: "courses/:courseId",
-            element: <EditCourse />,
-
+            path: "browse-courses",
+            element: <Courses />,
           },
           {
-            //Dynamic routing
-            path: "courses/:courseId/lecture",
-            element: <CreateLecture />,
-
+            path: "course-progress/:courseId",
+            element: <CourseProgress />,
           },
+
+          // Instructor routes
           {
             path: "dashboard",
             element: <Dashboard />,
           },
           {
-            //Dynamic routing
+            path: "courses",
+            element: <CourseTable />,
+          },
+          {
+            path: "courses/create",
+            element: <AddCourse />,
+          },
+          {
+            path: "courses/:courseId",
+            element: <EditCourse />,
+          },
+          {
+            path: "courses/:courseId/lecture",
+            element: <CreateLecture />,
+          },
+          {
             path: "courses/:courseId/lecture/:lectureId",
             element: <EditLecture />,
           },
@@ -125,7 +112,6 @@ const appRouter = createBrowserRouter([
 ]);
 
 function App() {
-  // const [count, setCount] = useState(0)
   return (
     <main>
       <RouterProvider router={appRouter} />

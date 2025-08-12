@@ -270,7 +270,7 @@ const CourseTab = () => {
             )}
           </div>
           <div className="flex items-end gap-2">
-            <Button variant="outline" onClick={() => navigate("/admin/courses")}>
+            <Button variant="outline" onClick={() => navigate("/dashboard/courses")}>
               <ArrowLeft></ArrowLeft>
               Go Back
             </Button>

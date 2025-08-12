@@ -18,7 +18,7 @@ const EditCourse = () => {
           <span>Once the basic details are set, Continue to lectures page</span>
         </div>
         <div>
-          <Link to={`/admin/courses/${id}/lecture`}>
+          <Link to={`/dashboard/courses/${id}/lecture`}>
             <button className={`${styles.btn1} font-funnel`}>
               {"Go to lectures pages"}
             </button>

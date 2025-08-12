@@ -2,11 +2,12 @@ import { User } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/generateToken.js";
 import { deleteMediaCD, uploadMediaCD } from "../utils/cloudinary.js";
-import upload from "../utils/multer.js";
 
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    // Check for missing fields
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -14,6 +15,23 @@ export const register = async (req, res) => {
       });
     }
 
+    // Email format validation
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format.",
+      });
+    }
+
+    // Password length check
+    if (password.length < 4) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 4 characters long.",
+      });
+    }
+
+    // Check if user already exists
     const user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({
@@ -22,22 +40,23 @@ export const register = async (req, res) => {
       });
     }
 
+    // Hash password and create user
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
-
     await User.create({ name, email, password: hashedPassword });
 
     return res.status(201).json({
       success: true,
       message: "Account created successfully.",
     });
+
   } catch (err) {
     return res.status(500).json({
       success: false,
-      message: "Failed to register",
+      message: err.message || "Failed to register",
     });
   }
 };
+
 
 export const login = async (req, res) => {
   try {

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Course from "./student/Course";
+import Courses from "./Courses";
 
 const HeroSection = () => {
   const navigate=useNavigate();
@@ -13,6 +15,7 @@ const HeroSection = () => {
   }
 
   return (
+    <>
     <section
       className="font-funnel relative pt-40 pb-24 px-4 flex flex-col items-center justify-center text-center min-h-[60vh] overflow-hidden z-10"
       style={{
@@ -47,6 +50,8 @@ const HeroSection = () => {
         </button>
       </div>
     </section>
+    <Courses/>
+    </>
   );
 };
 

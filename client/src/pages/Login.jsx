@@ -1,4 +1,4 @@
-import { AppWindowIcon, CodeIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -16,9 +16,11 @@ import { useEffect, useState } from "react";
 import { useRegisterUserMutation } from "@/features/api/authApi";
 import { useLoginUserMutation } from "@/features/api/authApi";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 
 const Login = () => {
+  const {userRole}=useSelector(state=>state.auth)
 
   const navigate=useNavigate();
   
@@ -28,6 +30,8 @@ const Login = () => {
     passwrd: "",
   });
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
+
+  const [activeTab,setActiveTab]=useState("signup");
 
   const [
     registerUser,
@@ -69,6 +73,7 @@ const Login = () => {
   useEffect(()=>{
     if(registerIsSuccess && registerData){
       toast.success(registerData.message || "Signup succesfull");
+      setActiveTab("login")
       navigate("/login")
     }
     if(registerError){
@@ -76,7 +81,9 @@ const Login = () => {
     }
     if(loginIsSuccess && loginData){
       toast.success(loginIsSuccess.message || "Login succesfull");
-       navigate("/my-learning")
+    
+      navigate("/dashboard")
+   
     }
     if(loginError){
       toast.error(loginError.data.message || "Login failed");
@@ -86,7 +93,7 @@ const Login = () => {
   return (
     <div className="flex items-center w-full justify-center h-screen mt-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <Tabs defaultValue="signup">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
             <TabsTrigger value="login">Login</TabsTrigger>

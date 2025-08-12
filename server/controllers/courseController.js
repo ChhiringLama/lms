@@ -267,12 +267,16 @@ export const editLecture = async (req, res) => {
     //Update lecture
 
     if (lectureTitle) lecture.lectureTitle = lectureTitle;
+    
     if (lectureDesc) lecture.lectureDesc = lectureDesc;
     if (videoInfo) {
       lecture.videoUrl = videoInfo.videoUrl;
       lecture.publicId = videoInfo.publicId;
     }
-    if (isPreviewFree) lecture.isPreviewFree = isPreviewFree;
+    // Always update isPreviewFree regardless of its value
+    if (typeof isPreviewFree === 'boolean') {
+      lecture.isPreviewFree = isPreviewFree;
+    }
 
     await lecture.save();
 

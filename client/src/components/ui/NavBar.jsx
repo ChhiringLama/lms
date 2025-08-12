@@ -67,20 +67,10 @@ const NavBar = () => {
               <DropdownMenuContent>
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {
-                  user.role === "student" && (<>
-                   <DropdownMenuItem ><Link to="my-learning">My Learning</Link></DropdownMenuItem>
-                  </>
-                  )
-                }
-               
-                <DropdownMenuItem><Link to={'profile'}>Edit Profile</Link></DropdownMenuItem>
-                {
-                  user.role === "instructor" && (<>
-                    <DropdownMenuItem><Link to='admin/dashboard'>Dashboard</Link></DropdownMenuItem>
-                  </>
-                  )
-                }
+            
+             
+                    <DropdownMenuItem><Link to='/dashboard'>Dashboard</Link></DropdownMenuItem>
+              
                 <DropdownMenuItem onClick={logoutHandler}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

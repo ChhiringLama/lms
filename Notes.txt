@@ -168,3 +168,23 @@ If you upload a video to Cloudinary, the response might look like this:
   "url": "http://res.cloudinary.com/demo/video/upload/v114567890/my-folder/video123.mp4",
   "secure_url": "https://res.cloudinary.com/demo/video/upload/5567890/my-folder/video123.mp4"
 }
+
+
+
+users :
+
+ student:
+    Pasang
+    Pasang@gmail.com
+    password
+
+    Dhawa
+    dhawa@gmail.com
+    password
+
+instructor:
+    lamachhiring@gmail.com
+    123123
+
+    messi@gmail.com
+    password

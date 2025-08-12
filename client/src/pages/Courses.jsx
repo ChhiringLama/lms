@@ -1,5 +1,5 @@
 import { useGetPublishedCourseQuery } from "@/features/api/courseApi";
-import Course from "./Course";
+import Course from "./student/Course";
 import { useEffect, useState } from "react";
 
 const Courses = () => {

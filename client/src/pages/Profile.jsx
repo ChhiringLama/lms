@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import {
   Dialog,
   DialogTrigger,
@@ -6,16 +6,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
+import { Label } from "../components/ui/label";
 import { Loader2 } from "lucide-react";
 import {
   useLoadUserQuery,
   useUpdateUserMutation,
-} from "@/features/api/authApi";
+} from "../features/api/authApi";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
@@ -89,8 +89,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto my-20 px-4 md:px-0">
-      <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">
+   <>
         <Avatar className="h-28 w-28 mb-4 ring-4 ring-green-200">
           <AvatarImage src={user.photoUrl} />
           <AvatarFallback>{user.name?.[0] || "U"}</AvatarFallback>
@@ -167,8 +166,7 @@ const Profile = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
-    </div>
+        </>
   );
 };
 

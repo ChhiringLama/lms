@@ -58,7 +58,7 @@ const CreateLecture = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => navigate(`/admin/courses/${courseId}`)}>
+          <Button variant="outline" onClick={() => navigate(`/dashboard/courses/${courseId}`)}>
             Go Back to Course
           </Button>
           <Button disabled={isLoading} onClick={createLectureHandler}>
