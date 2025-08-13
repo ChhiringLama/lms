@@ -53,9 +53,14 @@ const NavBar = () => {
         <div className="flex items-center gap-2">
           {/* <img src={logo} alt="Logo" className="w-8 h-8 object-contain" /> */}
           <h1 className="font-headvig hidden md:block font-semibold text-2xl text-cyan-800"><Link to={"/"}>Edu<span className="text-emerald-800">Online</span></Link></h1>
+          
+       
         </div>
         {/* user icon and dark mode  */}
         <div className="flex items-center gap-7">
+        <span className="text-sm"><Link to={"/"}>Home</Link></span>
+        <span className="text-sm"><Link to={"/aboutus"}>About LMS</Link></span>
+        <span className="text-sm"><Link to={"/contactus"}>Contact Us</Link></span>
           {user ? (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger>

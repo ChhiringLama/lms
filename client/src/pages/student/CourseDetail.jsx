@@ -17,6 +17,7 @@ import LectureAccordion from "@/components/ui/LectureAccordion";
 import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import style from "./CourseDetail.module.css";
+import { toast } from "sonner";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
@@ -29,16 +30,16 @@ const CourseDetail = () => {
   const { data, isLoading, isError } =
     useGetCourseDetailWithStatusQuery(courseId);
 
-  const { user: { _id }} = useSelector((store) => store.auth);
+  const { user } = useSelector((store) => store?.auth);
   const [isCoursePurchased, { data: purchaseStatus }] =
     useIsCoursePurchasedMutation();
 
   useEffect(() => {
-    if (_id) {
-      const userId = _id;
+    if (user?._id) {
+      const userId = user._id;
       isCoursePurchased({ courseId, userId });
     }
-  }, [_id, courseId]);
+  }, [user?._id, courseId]);
 
   const handleContinueCourse = () => {
     if (purchased) {

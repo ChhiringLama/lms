@@ -18,6 +18,8 @@ import EditLecture from "./pages/admin/lecture/EditLecture";
 import CourseDetail from "./pages/student/CourseDetail";
 import CourseProgress from "./pages/student/CourseProgress";
 import SearchPage from "./pages/SearchPage";
+import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
 
 // Simple redirect component
 const DashboardRedirect = () => {
@@ -33,6 +35,14 @@ const appRouter = createBrowserRouter([
       {
         path: "/",
         element: <HeroSection />,
+      },
+      {
+        path: "/aboutus",
+        element: <AboutUs />,
+      },
+      {
+        path: "/contactus",
+        element: <ContactUs />,
       },
       {
         path: "/login",
@@ -61,7 +71,7 @@ const appRouter = createBrowserRouter([
             path: "",
             element: <Dashboard />,
           },
-          
+
           // Student routes
           {
             path: "profile",

@@ -4,6 +4,7 @@ import Course from "./student/Course";
 import Courses from "./Courses";
 import CourseCategories from "./CourseCategories";
 import Lecturers from "./Lecturers";
+import Footer from "./Footer";
 
 const HeroSection = () => {
   const navigate=useNavigate();
@@ -55,6 +56,7 @@ const HeroSection = () => {
     <Courses/>
     <CourseCategories/>
     <Lecturers/>
+    <Footer/>
     </>
   );
 };

@@ -136,7 +136,7 @@ const CourseProgress = () => {
   }
 
   return (
-    <div className="mt-14 max-w-7xl p-4 mx-auto">
+    <div className="max-w-7xl mx-auto">
       <div className="flex h-screen bg-gray-50">
         <div className="flex-2 w-2/3 p-8 pt-6 flex flex-col items-center">
           <div className="w-full max-w-3xl aspect-video bg-black rounded-xl shadow-2xl flex items-center justify-center border border-gray-300 mt-2">
@@ -149,6 +149,7 @@ const CourseProgress = () => {
             <video
               src={currentLecture?.videoUrl || initLecture?.videoUrl}
               controls
+              controlsList="nodownload noremoteplayback"
               onPlay={() =>
                 handleLectureProgress(currentLecture?._id || initLecture?._id)
               }
@@ -161,7 +162,7 @@ const CourseProgress = () => {
               Your browser does not support the video tag.
             </video>
           </div>
-          <h4 className="text-xl font-semibold mb-4">{`Lecture ${course?.lectures?.findIndex(
+          <h4 className="text-xl mt-4 font-semibold mb-4">{`Lecture ${course?.lectures?.findIndex(
             (lec) => lec?._id === (currentLecture?._id || initLecture?._id)
           ) + 1
             } : ${currentLecture?.lectureTitle || initLecture?.lectureTitle
@@ -187,8 +188,11 @@ const CourseProgress = () => {
         <div className="flex-1 w-1/3 p-6 overflow-y-auto border-l border-gray-200 bg-white">
           <h1>{course?.courseTitle || "Course Title"}</h1>
           <h2 className="text-xl font-bold mb-4">Lectures</h2>
-          <Button onClick={courseStatus ? handleInCompleteCourse : handleCompleteCourse}>
+          <Button className="mb-4" onClick={courseStatus ? handleInCompleteCourse : handleCompleteCourse}>
             {courseStatus ? <div> <CheckCircle /> <span>Completed</span> </div> : "Mark as Completed"}
+          </Button>
+          <Button variant="outline" className="ml-2" onClick={()=>navigate(`/course-detail/${courseId}`)}>
+             View Store Page
           </Button>
           <div className="space-y-3">
             {course?.lectures?.map((lecture, index) => (
