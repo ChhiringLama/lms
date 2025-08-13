@@ -1,21 +1,30 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import { useNavigate } from "react-router-dom";
 import { useLoadUserQuery } from "@/features/api/authApi";
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import { BookOpen, User, Play } from "lucide-react";
+import { useGetEnrolledCourseQuery } from "@/features/api/courseApi";
 
 const MyLearning = () => {
+
   const { data, isLoading } = useLoadUserQuery();
   const user = data?.user;
 
+  const {data:coursesEnrolledData}=useGetEnrolledCourseQuery(user?._id);
+
+
+
+  console.log(coursesEnrolledData);
   useEffect(() => {
     if (user) {
       console.log("User loaded:", user);
     }
   }, [user]);
+
+
 
   if (isLoading) {
     return (
@@ -90,8 +99,8 @@ const MyLearning = () => {
             </CardContent>
           </Card>
         ) : (
-          user.enrolledCourses.map((course) => (
-            <LearningCard course={course} key={course.id} />
+          coursesEnrolledData?.enrolledCourses?.map((course) => (
+            <LearningCard course={course} key={course?.id} />
           ))
         )}
       </div>
@@ -99,38 +108,49 @@ const MyLearning = () => {
   );
 };
 
-const LearningCard = ({ course }) => (
+
+
+const LearningCard = ({ course }) => {
+
+  const navigate=useNavigate()
+
+  const selectCourseHandler=(courseId)=>{
+      navigate(`/dashboard/course-progress/${courseId}`);
+  }
+
+return(
   <Card className="hover:shadow-md transition-shadow group">
     <CardHeader className="pb-3">
       <div className="relative">
         <img
-          src={course.image}
-          alt={course.title}
+          src={course?.courseThumbnail}
+          alt={course?.courseTitle}
           className="h-32 w-full object-cover rounded-lg mb-3"
         />
         <div className="absolute top-2 right-2">
           <Avatar className="h-8 w-8 border-2 border-white">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src={`${course?.creator?.photoUrl}`} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
       </div>
       <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
-        {course.title}
+        {course?.courseTitle}
       </CardTitle>
       <CardDescription className="flex items-center gap-2">
         <User className="w-4 h-4" />
-        {course.instructor}
+        {course?.creator?.name}
       </CardDescription>
     </CardHeader>
     <CardContent>
-      <Button className="w-full" size="sm">
+      <Button className="w-full" size="sm" onClick={()=>selectCourseHandler(course?._id)}>
         <Play className="w-4 h-4 mr-2" />
         Continue Learning
       </Button>
     </CardContent>
   </Card>
-);
+    )
+  }
 
 const SkeletonCard = () => (
   <Card className="animate-pulse">

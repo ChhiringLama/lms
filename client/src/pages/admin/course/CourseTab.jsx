@@ -52,6 +52,7 @@ const CourseTab = () => {
     courseTitle: "",
     subTitle: "",
     description: "",
+    expectedOutcome:"",
     category: "",
     courseLevel: "",
     coursePrice: "",
@@ -64,6 +65,7 @@ const CourseTab = () => {
         courseTitle: courseByIdData.course.courseTitle,
         subTitle: courseByIdData.course.subTitle,
         description: courseByIdData.course.description,
+        expectedOutcome: courseByIdData.course.expectedOutcome,
         category: courseByIdData.course.category,
         courseLevel: courseByIdData.course.courseLevel,
         coursePrice: courseByIdData.course.coursePrice,
@@ -130,6 +132,7 @@ const CourseTab = () => {
     formData.append("courseTitle", input.courseTitle);
     formData.append("subTitle", input.subTitle);
     formData.append("description", input.description);
+    formData.append("expectedOutcome", input.expectedOutcome);
     formData.append("category", input.category);
     formData.append("courseLevel", input.courseLevel);
     formData.append("coursePrice", input.coursePrice);
@@ -201,7 +204,11 @@ const CourseTab = () => {
           </div>
           <div>
             <Label>Description</Label>
-            <RichTextEditor input={input} setInput={setInput} />
+            <RichTextEditor input={input} setInput={setInput} formField={"description"}/>
+          </div>
+          <div>
+            <Label>Expected Outcome</Label>
+            <RichTextEditor input={input} setInput={setInput} formField={"expectedOutcome"}/>
           </div>
           <div className="flex items-center gap-5">
             <div>

@@ -1,16 +1,20 @@
 import { useCompleteCourseMutation, useGetCourseProgressQuery, useInCompleteCourseMutation, useUpdateLectureProgressMutation } from "@/features/api/courseProgressApi";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 // import { current } from "@reduxjs/toolkit";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useIsCoursePurchasedMutation } from "@/features/api/purchaseApi";
+import { useSelector } from "react-redux";
 
 const CourseProgress = () => {
   const { courseId } = useParams();
+
   const { data, isLoading, isError, isSuccess, refetch } =
     useGetCourseProgressQuery(courseId);
+    const navigate=useNavigate();
 
   const [course, setCourse] = useState([]);
   const [courseStatus, setCourseStaus] = useState([]);
@@ -21,6 +25,18 @@ const CourseProgress = () => {
   const [updateLectureProgress] = useUpdateLectureProgressMutation()
   const [completeCourse, { data: markCompleteData, isSuccess: completedSuccess }] = useCompleteCourseMutation();
   const [inCompleteCourse, { data: markInCompleteData, isSuccess: inCompletedSuccess }] = useInCompleteCourseMutation();
+
+  const { user: { _id }} = useSelector((store) => store.auth);
+  const [isCoursePurchased, { data: purchaseStatus }] =
+    useIsCoursePurchasedMutation();
+
+  useEffect(() => {
+    if (_id) {
+      const userId = _id;
+      isCoursePurchased({ courseId, userId });
+    }
+  }, [_id, courseId]);
+  useEffect(()=>{},[])
 
   const isLectureCompleted = (lectureId) => {
     // console.log("Checking completion for lecture:", lectureId);
@@ -113,6 +129,11 @@ const CourseProgress = () => {
   if (isError) return <p>Failed to load course details</p>;
 
   //   const { courseTitle } = courseDetails;
+
+  if(purchaseStatus?.purchased === false) {
+    toast.error("Unethical Activity Detected")
+    navigate(`/course-detail/${courseId}`)
+  }
 
   return (
     <div className="mt-14 max-w-7xl p-4 mx-auto">

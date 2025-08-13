@@ -3,6 +3,7 @@ import {
   createCheckoutSession,
   getAllPurchasedCourse,
   getCourseDetailWithPurchaseStatus,
+  getPurchaseState,
   webhook,
 } from "../controllers/coursePurchaseController.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
@@ -13,5 +14,6 @@ router.route("/webhook").post(express.raw({ type: "application/json" }), webhook
 router.route("/checkout/create-checkout-session").post(isAuthenticated, createCheckoutSession);
 
 router.route("/course/:courseId/detail-with-status").get(getCourseDetailWithPurchaseStatus);
+router.route("/course/:courseId/purchase-status").post(getPurchaseState);
 router.route("/").get(isAuthenticated,getAllPurchasedCourse);
 export default router;

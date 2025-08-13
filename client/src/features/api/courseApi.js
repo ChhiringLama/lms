@@ -133,6 +133,12 @@ export const courseApi = createApi({
       }),
       invalidatesTags: ["Lecture", "LectureList"],
     }),
+    getEnrolledCourse: builder.query({
+      query: (userId) => ({
+        url: `/coursesEnrolled/${userId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -150,4 +156,5 @@ export const {
   usePublishCourseMutation,
   useGetPublishedCourseQuery,
   useGetSearchedCoursesQuery,
+  useGetEnrolledCourseQuery
 } = courseApi;

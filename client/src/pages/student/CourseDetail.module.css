@@ -1,0 +1,9 @@
+.listItemsCourse{
+    & ol , ul {
+        margin-left: 20px;
+    }
+
+   & li{
+        list-style:disc;
+    }
+}

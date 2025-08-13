@@ -1,5 +1,6 @@
-import { populate } from "dotenv";
+
 import { Course } from "../models/courseModel.js";
+import { User } from "../models/userModel.js";
 import { Lecture } from "../models/lectureModel.js";
 import {
   deleteMediaCD,
@@ -105,6 +106,7 @@ export const editCourse = async (req, res) => {
     const {
       courseTitle,
       subTitle,
+      expectedOutcome,
       description,
       category,
       courseLevel,
@@ -112,7 +114,7 @@ export const editCourse = async (req, res) => {
     } = req.body;
     const courseThumbnail = req.file; // File from the request
 
-    console.log("CourseThumbnail:", courseThumbnail);
+    console.log(expectedOutcome);
 
     let course = await Course.findById(courseId);
 
@@ -144,6 +146,7 @@ export const editCourse = async (req, res) => {
       description,
       category,
       courseLevel,
+      expectedOutcome,
       coursePrice,
       courseThumbnail: uploadedThumbnail || course.courseThumbnail,
       courseThumbnailPublicId:
@@ -267,14 +270,14 @@ export const editLecture = async (req, res) => {
     //Update lecture
 
     if (lectureTitle) lecture.lectureTitle = lectureTitle;
-    
+
     if (lectureDesc) lecture.lectureDesc = lectureDesc;
     if (videoInfo) {
       lecture.videoUrl = videoInfo.videoUrl;
       lecture.publicId = videoInfo.publicId;
     }
     // Always update isPreviewFree regardless of its value
-    if (typeof isPreviewFree === 'boolean') {
+    if (typeof isPreviewFree === "boolean") {
       lecture.isPreviewFree = isPreviewFree;
     }
 
@@ -419,7 +422,6 @@ export const searchCourse = async (req, res) => {
   try {
     let { q = "", categories = [], sortByPrice = "" } = req.query;
 
-
     if (typeof categories === "string" && categories.length > 0) {
       categories = categories.split(",").map((c) => c.trim());
     }
@@ -457,6 +459,41 @@ export const searchCourse = async (req, res) => {
       success: true,
       courses: courses || [],
     });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "An error occurred while searching for courses.",
+      error,
+    });
+  }
+};
+
+export const getEnrolledCourse = async (req, res) => {
+  try {
+    const {userId}=req.params;
+    
+   
+    // Find the user and populate the enrolledCourses field
+    const user = await User.findById(userId).populate({
+      path: "enrolledCourses",
+      select: "courseTitle category coursePrice creator courseThumbnail _id", // Select specific fields from the Course model
+      populate: {
+        path: "creator",
+        select: "name photoUrl", // Populate the creator field in the Course model
+      },
+    });
+
+     if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      enrolledCourses: user.enrolledCourses || [],
+    });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({

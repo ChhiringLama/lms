@@ -2,15 +2,15 @@ import React from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-function RichTextEditor({ input, setInput }) {
+function RichTextEditor({ input, setInput, formField }) {
   const handleChange = (content) => {
-    setInput({ ...input, description: content });
+    setInput({ ...input, [formField]: content });
   };
 
   return (
     <ReactQuill
       theme="snow"
-      value={input.description}
+      value={input[formField]}
       onChange={handleChange}
     />
   );

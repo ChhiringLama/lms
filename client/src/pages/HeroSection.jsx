@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Course from "./student/Course";
 import Courses from "./Courses";
+import CourseCategories from "./CourseCategories";
+import Lecturers from "./Lecturers";
 
 const HeroSection = () => {
   const navigate=useNavigate();
@@ -51,6 +53,8 @@ const HeroSection = () => {
       </div>
     </section>
     <Courses/>
+    <CourseCategories/>
+    <Lecturers/>
     </>
   );
 };

@@ -40,8 +40,8 @@ export const createCheckoutSession = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `http://localhost:5173/course-progress/${courseId}`, // fixed url
-      cancel_url: `http://localhost:5173/course-progress/${courseId}`, // fixed url
+      success_url: `http://localhost:5173/dashboard/course-progress/${courseId}`, // fixed url
+      cancel_url: `http://localhost:5173/dashboard/course-progress/${courseId}`, // fixed url
       metadata: {
         courseId: courseId,
         userId: userId,
@@ -71,7 +71,6 @@ export const createCheckoutSession = async (req, res) => {
   }
 };
 
-
 export const webhook = async (req, res) => {
   let event;
   try {
@@ -84,10 +83,9 @@ export const webhook = async (req, res) => {
     });
 
     event = stripe.webhooks.constructEvent(payloadString, header, secret);
-
   } catch (error) {
     console.log("Webhook error", error.message);
-    return res.status(400).send(`Webhook error: ${error.message}`)
+    return res.status(400).send(`Webhook error: ${error.message}`);
   }
 
   //Handle the checkout session completed event
@@ -121,7 +119,6 @@ export const webhook = async (req, res) => {
 
       await purchase.save();
 
-
       //Update users' enrolledCourses
 
       await User.findByIdAndUpdate(
@@ -130,27 +127,44 @@ export const webhook = async (req, res) => {
         { new: true }
       );
 
-
       //Update course to add user Id to enrolledStudents
       await Course.findByIdAndUpdate(
         purchase.courseId._id,
         { $addToSet: { enrolledStudents: purchase.userId } },
         { new: true }
-      )
+      );
     } catch (error) {
       console.log("Error handling event:", error);
-      return res.status(500).json({ message: "Internal server error" })
+      return res.status(500).json({ message: "Internal server error" });
     }
   }
+};
 
-}
+export const getPurchaseState = async (req, res) => {
+  try {
+    const { courseId, userId } = req.body;
+
+    const purchased = await CoursePurchase.findOne({ userId, courseId });
+    console.log("Course status: " +  purchased);
+
+    return res.status(200).json({
+      purchased: purchased ? true : false,
+    });
+  } catch (error) {
+    console.log("Error handling event:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 export const getCourseDetailWithPurchaseStatus = async (req, res) => {
   try {
     const { courseId } = req.params;
+
     const userId = req.id;
 
-    const course = await Course.findById(courseId).populate({ path: "creator" }).populate({ path: "lectures" });
+    const course = await Course.findById(courseId)
+      .populate({ path: "creator" })
+      .populate({ path: "lectures" });
 
     const purchased = await CoursePurchase.findOne({ userId, courseId });
 
@@ -160,31 +174,29 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
 
     return res.status(200).json({
       course,
-      purchased: purchased ? true : false
-    })
-
+      purchased: purchased ? true : false,
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
+};
 
 export const getAllPurchasedCourse = async (_, res) => {
   try {
-    const purchasedCourse = await CoursePurchase.find({ status: "completed" }).populate("courseId");
+    const purchasedCourse = await CoursePurchase.find({
+      status: "completed",
+    }).populate("courseId");
 
     if (!purchasedCourse) {
       return res.status(404).json({
         purchasedCourse: [],
-      })
+      });
     }
 
     return res.status(200).json({
-      purchasedCourse
-    })
+      purchasedCourse,
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
-
+};

@@ -38,6 +38,9 @@ const courseSchema = new mongoose.Schema({
   isPublished: {
     type:Boolean,
     default:false
+  },
+  expectedOutcome:{
+    type:String,
   }
 }, {timestamps:true});
 
