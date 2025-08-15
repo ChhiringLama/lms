@@ -17,16 +17,21 @@ import { toast } from "sonner";
 import { useCreateCourseMutation } from "@/features/api/courseApi";
 
 const AddCourse = () => {
-  const [courseTitle, setCourseTitle] = useState();
-  const [category, setCategory] = useState();
-  const [coursePrice, setCoursePrice] = useState();
+  const [courseTitle, setCourseTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [coursePrice, setCoursePrice] = useState(0);
 
   const [createCourse, { data, error, isSuccess, isLoading }] =
     useCreateCourseMutation();
   const navigate = useNavigate();
 
   const createCourseHandle = async () => {
-    await createCourse({ courseTitle, category, coursePrice });
+    if(courseTitle == " " || category == "" || coursePrice == 0){
+      toast.error("Please fill in all the input field")
+    }else{
+      await createCourse({ courseTitle, category, coursePrice });
+    }
+
   };
 
   const getSelectedCategory = (value) => {
@@ -68,6 +73,7 @@ const AddCourse = () => {
             type="number"
             name="coursePrice"
             value={coursePrice}
+       
             onChange={(e) => setCoursePrice(e.target.value)}
           ></Input>
         </div>

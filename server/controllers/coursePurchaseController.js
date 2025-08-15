@@ -145,7 +145,7 @@ export const getPurchaseState = async (req, res) => {
     const { courseId, userId } = req.body;
 
     const purchased = await CoursePurchase.findOne({ userId, courseId });
-    console.log("Course status: " +  purchased);
+    console.log("Course status: " + purchased);
 
     return res.status(200).json({
       purchased: purchased ? true : false,
@@ -198,5 +198,34 @@ export const getAllPurchasedCourse = async (_, res) => {
     });
   } catch (error) {
     console.log(error);
+  }
+};
+export const getTotalSale = async (req, res) => {
+  try {
+    const userId = req.id;
+
+    const coursesFromThisInstructor = await Course.find({
+      creator: userId,
+    }).select("_id");
+    
+    if (!coursesFromThisInstructor || coursesFromThisInstructor.length === 0) {
+      return res.status(204).json({
+        message: "No courses found on this user",
+      });
+    }
+
+    const purchasedCourses = await CoursePurchase.find({
+      courseId: { $in: coursesFromThisInstructor.map((c) => c._id) },
+      status: 'completed' // Only count completed purchases
+    });
+
+    // Sum up all the amounts from the purchased courses
+    const totalSales = purchasedCourses.reduce((sum, purchase) => sum + purchase.amount, 0);
+
+    return res.status(200).json({
+      totalSales,
+    });
+  } catch (error) {
+    return res.status(400).json({ message: "An error occurred", error });
   }
 };

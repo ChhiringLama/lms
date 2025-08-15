@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
 const COURSE_PURCHASE_API = "http://localhost:8080/api/v1/purchase";
 
 export const purchaseApi = createApi({
@@ -14,31 +13,41 @@ export const purchaseApi = createApi({
       query: (body) => ({
         url: "/checkout/create-checkout-session",
         method: "POST",
-        body
+        body,
       }),
     }),
-    getCourseDetailWithStatus:builder.query({
-      query:(courseId)=>({
-        url:`/course/${courseId}/detail-with-status`,
-        method:"GET"
-      })
-    }),
-    isCoursePurchased:builder.mutation({
-      query:({courseId, userId})=>({
-        url:`/course/${courseId}/purchase-status`,
-        method:"POST",
-        body: {courseId, userId}
+    getCourseDetailWithStatus: builder.query({
+      query: (courseId) => ({
+        url: `/course/${courseId}/detail-with-status`,
+        method: "GET",
       }),
-      
     }),
-    getPurchasedCourses:builder.query({
-      query:()=>({
-        url:`/`,
-        method:"GET"
-      })
+    isCoursePurchased: builder.mutation({
+      query: ({ courseId, userId }) => ({
+        url: `/course/${courseId}/purchase-status`,
+        method: "POST",
+        body: { courseId, userId },
+      }),
     }),
-  })
+    getPurchasedCourses: builder.query({
+      query: () => ({
+        url: `/`,
+        method: "GET",
+      }),
+    }),
+    getTotalSales: builder.query({
+      query: () => ({
+        url: `/course/get-total-sales`,
+        method: "GET",
+      }),
+    }),
+  }),
 });
 
-
-export const {useCreateCheckoutSessionMutation, useGetCourseDetailWithStatusQuery, useGetPurchasedCoursesQuery, useIsCoursePurchasedMutation}=purchaseApi;
+export const {
+  useCreateCheckoutSessionMutation,
+  useGetCourseDetailWithStatusQuery,
+  useGetPurchasedCoursesQuery,
+  useIsCoursePurchasedMutation,
+  useGetTotalSalesQuery
+} = purchaseApi;

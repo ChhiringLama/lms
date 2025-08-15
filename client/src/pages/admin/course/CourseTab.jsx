@@ -78,7 +78,7 @@ const CourseTab = () => {
   useEffect(() => {
     if (removeSuccess) {
       toast.success("Course removed successfully");
-      navigate("/admin/courses")
+      navigate("/dashboard/courses")
     } else if (removeError) {
       toast.error("Course removal failed");
       console.log(removeError);

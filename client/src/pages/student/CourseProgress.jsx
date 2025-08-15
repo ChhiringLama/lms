@@ -188,12 +188,15 @@ const CourseProgress = () => {
         <div className="flex-1 w-1/3 p-6 overflow-y-auto border-l border-gray-200 bg-white">
           <h1>{course?.courseTitle || "Course Title"}</h1>
           <h2 className="text-xl font-bold mb-4">Lectures</h2>
+          <div className="mb-5">
+
           <Button onClick={courseStatus ? handleInCompleteCourse : handleCompleteCourse}>
             {courseStatus ?<><CheckCircle /> <span>Completed</span> </> : "Mark as Completed"}
           </Button>
           <Button variant="outline" className="ml-2" onClick={()=>navigate(`/course-detail/${courseId}`)}>
              View Store Page
           </Button>
+          </div>
           <div className="space-y-3">
             {course?.lectures?.map((lecture, index) => (
               <div
