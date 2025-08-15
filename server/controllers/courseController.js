@@ -472,7 +472,6 @@ export const getEnrolledCourse = async (req, res) => {
   try {
     const {userId}=req.params;
     
-   
     // Find the user and populate the enrolledCourses field
     const user = await User.findById(userId).populate({
       path: "enrolledCourses",

@@ -3,7 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const ReviewForm = ({ setMessage, handleRatingChange, handleRatingSubmit, purchaseStatus }) => {
+const ReviewForm = ({ setMessage, message ,handleRatingChange, handleRatingSubmit, purchaseStatus }) => {
     
 
     const showToast=()=>{
@@ -11,7 +11,7 @@ const ReviewForm = ({ setMessage, handleRatingChange, handleRatingSubmit, purcha
     }
     
     return (
-    <div className="border mt-6 bg-white p-6 rounded-xl shadow-lg mb-8 space-y-5  mx-auto">
+    <div className="border mt-6 bg-white p-6 rounded-xl shadow mb-8 space-y-5  mx-auto">
         <h3 className="font-funnel text-xl font-bold text-gray-900 border-b pb-2">Leave a review</h3>
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
@@ -19,6 +19,7 @@ const ReviewForm = ({ setMessage, handleRatingChange, handleRatingSubmit, purcha
                 onChange={e => setMessage(e.target.value)}
                 placeholder="Write your review here..."
                 rows={4}
+                value={message}
                 required
                 className="w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
             />

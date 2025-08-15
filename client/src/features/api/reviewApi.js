@@ -14,10 +14,15 @@ export const reviewApi = createApi({
             url: `/create/${courseId}`,
             method: "POST",
             body: { message, rating, courseId }
-          }),
-        
+          }), 
+    }),
+    getAllReview:builder.query({
+      query:(courseId)=>({
+        url:`/getallreviews/${courseId}`,
+        method:"GET"
+      })
     })
   })
 })
 
-export const {useCreateReviewMutation}=reviewApi;
+export const {useCreateReviewMutation, useGetAllReviewQuery}=reviewApi;

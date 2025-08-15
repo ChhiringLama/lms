@@ -19,9 +19,12 @@ import { Button } from "@/components/ui/button";
 import style from "./CourseDetail.module.css";
 import { toast } from "sonner";
 
-import { useCreateReviewMutation } from "@/features/api/reviewApi";
+import { useCreateReviewMutation, useGetAllReviewQuery } from "@/features/api/reviewApi";
 import Footer from "../Footer";
 import ReviewForm from "./ReviewForm";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@radix-ui/react-select";
+import ReviewsSection from "./ReviewLists";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
@@ -31,12 +34,28 @@ const CourseDetail = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const navigate = useNavigate();
   const { userRole } = useSelector((store) => store.auth);
-  const { data, isLoading, isError } = useGetCourseDetailWithStatusQuery(courseId);
+  const { data, isLoading, isError } =
+    useGetCourseDetailWithStatusQuery(courseId);
   const { user } = useSelector((store) => store?.auth);
-  const [isCoursePurchased, { data: purchaseStatus }] = useIsCoursePurchasedMutation();
-  const [createReview, { isSuccess: reviewCSuccess , error:reviewCError}] = useCreateReviewMutation()
-  const [rating, setRating] = useState("3")
-  const [message, setMessage] = useState()
+  const [isCoursePurchased, { data: purchaseStatus }] =
+    useIsCoursePurchasedMutation();
+  const [
+    createReview,
+    { data: reviewData, isSuccess: reviewCSuccess, error: reviewCError },
+  ] = useCreateReviewMutation();
+  const [rating, setRating] = useState("3");
+  const [message, setMessage] = useState();
+
+
+  //Getting the Reviews
+  const { data: retrivedReviewData, isSuccess: reviewGSuccess, isLoading: reviewLoading } = useGetAllReviewQuery(courseId)
+  const [reviewsList, setReviewsList] = useState();
+  useEffect(() => {
+    if (reviewGSuccess) {
+      console.log(retrivedReviewData)
+      setReviewsList(retrivedReviewData?.foundReview?.reviews)
+    }
+  }, [reviewGSuccess])
 
   const handleContinueCourse = () => {
     if (purchased) {
@@ -45,31 +64,30 @@ const CourseDetail = () => {
   };
 
   const handleRatingChange = (value) => {
-    setRating(value)
-  }
+    setRating(value);
+  };
 
   const handleRatingSubmit = () => {
-    console.log(message, rating, courseId)
-    if(message.length < 10){
-      toast.error("Message too short")
-    }else{
-      createReview({ message, rating, courseId })
+    console.log(message, rating, courseId);
+    if (message.length < 10) {
+      toast.error("Message too short");
+    } else {
+      createReview({ message, rating, courseId });
     }
-  }
+    setMessage(" ");
+  };
 
-  useEffect(()=>{
-    if(reviewCError){
-      toast.error(reviewCError)
+  useEffect(() => {
+    if (reviewCError) {
+      toast.error(reviewCError);
     }
-  },[reviewCError])
+  }, [reviewCError]);
 
-  useEffect(()=>{
-    if(reviewCSuccess){
-      toast.success("Review Posted")
-      setMessage("")
-      setRating("3")
+  useEffect(() => {
+    if (reviewCSuccess) {
+      toast.success("Review Posted");
     }
-  },[reviewCSuccess])
+  }, [reviewCSuccess]);
 
   useEffect(() => {
     if (user?._id) {
@@ -97,7 +115,7 @@ const CourseDetail = () => {
       console.log(purchaseStatus);
       setPurchase(true);
     }
-  }, [purchaseStatus])
+  }, [purchaseStatus]);
 
   if (isLoading) {
     return (
@@ -239,7 +257,15 @@ const CourseDetail = () => {
               dangerouslySetInnerHTML={{ __html: course?.expectedOutcome }}
             ></div>
 
-            <ReviewForm handleRatingChange={handleRatingChange} setMessage={setMessage} purchaseStatus={purchaseStatus} handleRatingSubmit={handleRatingSubmit} />
+            <ReviewForm
+              handleRatingChange={handleRatingChange}
+              setMessage={setMessage}
+              message={message}
+              purchaseStatus={purchaseStatus}
+              handleRatingSubmit={handleRatingSubmit}
+            />
+
+            {reviewLoading ? <h5>Loading PLease wait</h5> : <ReviewsSection reviewsList={reviewsList} />}
 
           </div>
         </div>
