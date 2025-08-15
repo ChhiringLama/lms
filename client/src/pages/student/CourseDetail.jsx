@@ -19,6 +19,10 @@ import { Button } from "@/components/ui/button";
 import style from "./CourseDetail.module.css";
 import { toast } from "sonner";
 
+import { useCreateReviewMutation } from "@/features/api/reviewApi";
+import Footer from "../Footer";
+import ReviewForm from "./ReviewForm";
+
 const CourseDetail = () => {
   const { courseId } = useParams();
 
@@ -27,12 +31,37 @@ const CourseDetail = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const navigate = useNavigate();
   const { userRole } = useSelector((store) => store.auth);
-  const { data, isLoading, isError } =
-    useGetCourseDetailWithStatusQuery(courseId);
-
+  const { data, isLoading, isError } = useGetCourseDetailWithStatusQuery(courseId);
   const { user } = useSelector((store) => store?.auth);
-  const [isCoursePurchased, { data: purchaseStatus }] =
-    useIsCoursePurchasedMutation();
+  const [isCoursePurchased, { data: purchaseStatus }] = useIsCoursePurchasedMutation();
+  const [createReview, { isSuccess: reviewCSuccess , error:reviewCError}] = useCreateReviewMutation()
+  const [rating, setRating] = useState("3")
+  const [message, setMessage] = useState()
+
+  const handleContinueCourse = () => {
+    if (purchased) {
+      navigate(`/dashboard/course-progress/${courseId}`);
+    }
+  };
+
+  const handleRatingChange = (value) => {
+    setRating(value)
+  }
+
+  const handleRatingSubmit = () => {
+    console.log(message, rating, courseId)
+    if(message.length < 10){
+      toast.error("Message too short")
+    }else{
+      createReview({ message, rating, courseId })
+    }
+  }
+
+  useEffect(()=>{
+    if(reviewCError){
+      toast.error(reviewCError)
+    }
+  },[reviewCError])
 
   useEffect(() => {
     if (user?._id) {
@@ -40,12 +69,6 @@ const CourseDetail = () => {
       isCoursePurchased({ courseId, userId });
     }
   }, [user?._id, courseId]);
-
-  const handleContinueCourse = () => {
-    if (purchased) {
-      navigate(`/dashboard/course-progress/${courseId}`);
-    }
-  };
 
   useEffect(() => {
     if (data) {
@@ -61,12 +84,12 @@ const CourseDetail = () => {
     }
   }, [data]);
 
-  useEffect(()=>{
-    if(purchaseStatus?.purchased == true){
-         console.log(purchaseStatus);
-        setPurchase(true);
-      }
-  },[purchaseStatus])
+  useEffect(() => {
+    if (purchaseStatus?.purchased == true) {
+      console.log(purchaseStatus);
+      setPurchase(true);
+    }
+  }, [purchaseStatus])
 
   if (isLoading) {
     return (
@@ -207,6 +230,9 @@ const CourseDetail = () => {
               className={`text-gray-600 text-justify ${style.listItemsCourse}`}
               dangerouslySetInnerHTML={{ __html: course?.expectedOutcome }}
             ></div>
+
+            <ReviewForm handleRatingChange={handleRatingChange} setMessage={setMessage} purchaseStatus={purchaseStatus} handleRatingSubmit={handleRatingSubmit} />
+
           </div>
         </div>
 
@@ -297,6 +323,8 @@ const CourseDetail = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

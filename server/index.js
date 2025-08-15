@@ -8,6 +8,7 @@ import cors from 'cors'
 import mediaRoute from './routes/mediaRoute.js'
 import coursePurchaseRoute from "./routes/coursePurchaseRoute.js";
 import courseProgressRoute from './routes/courseProgressRoute.js'
+import reviewRoute from './routes/reviewRoute.js'
 
 
 dotenv.config({});
@@ -32,6 +33,7 @@ app.use('/api/v1/course', courseRoute);
 app.use('/api/v1/media', mediaRoute)
 app.use("/api/v1/purchase", coursePurchaseRoute);
 app.use("/api/v1/progress", courseProgressRoute);
+app.use("/api/v1/review", reviewRoute);
 
 app.listen(PORT, () => {
   console.log(`Server listening at port ${PORT}`);

@@ -6,14 +6,16 @@ const CourseCategories = () => {
   const navigate = useNavigate();
 
   // Dummy categories array
-  const categories = ["Programming", "Design", "Marketing", "Business"];
+  const categories = ["Programming", "Design", "Marketing", "Business", "Math"
+    , "Health", "Science", "Microprocessor", "Operating System", "Economics","Politics", "Marketing"
+  ];
 
   const handleCategoryClick = (category) => {
     navigate(`/course/search?q=${encodeURIComponent(category)}`);
   };
 
   return (
-    <section  data-aos="fade-right" className={`font-funnel relative pt-20 pb-16 px-4 flex flex-col items-center justify-center text-center min-h-[40vh] overflow-hidden z-10 `}>
+    <section className={`font-funnel relative pt-20 pb-16 px-4 flex flex-col items-center justify-center text-center min-h-[40vh] overflow-hidden z-10 `}>
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-green-900  opacity-80 pointer-events-none" />
       <div className="relative z-10 flex flex-col items-center w-full">

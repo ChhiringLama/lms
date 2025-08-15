@@ -10,9 +10,9 @@ const AboutUs = () => {
             <div className="w-[80%] m-auto">
                 <div className="min-h-screen ">
                     {/* First Section - Text Left, Image Right */}
-                    <section className="flex flex-col lg:flex-row items-center min-h-screen p-8">
+                    <section className="text-justify flex flex-col lg:flex-row items-center min-h-screen p-8">
                         <div className="lg:w-1/2 lg:pr-12 mb-8 lg:mb-0">
-                            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                            <h1 className=" font-funnel text-4xl font-bold text-gray-900 dark:text-white mb-6">
                                 About Our Learning Platform
                             </h1>
                             <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -37,9 +37,9 @@ const AboutUs = () => {
                     </section>
 
                     {/* Second Section - Image Left, Text Right */}
-                    <section className="flex flex-col lg:flex-row-reverse items-center min-h-screen p-8">
+                    <section className="text-justify flex flex-col lg:flex-row-reverse items-center min-h-screen p-8">
                         <div className="lg:w-1/2 lg:pl-12 mb-8 lg:mb-0">
-                            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                            <h2 className=" font-funnel text-4xl font-bold text-gray-900 dark:text-white mb-6">
                                 Our Mission & Vision
                             </h2>
                             <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">

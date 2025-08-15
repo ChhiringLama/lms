@@ -169,7 +169,7 @@ If you upload a video to Cloudinary, the response might look like this:
   "secure_url": "https://res.cloudinary.com/demo/video/upload/5567890/my-folder/video123.mp4"
 }
 
-
+modal={false} // Removes the scrollbar problem
 
 users :
 

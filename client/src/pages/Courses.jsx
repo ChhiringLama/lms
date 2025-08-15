@@ -16,7 +16,7 @@ const Courses = () => {
     return <h1>An error occured</h1>
 
   return (
-    <div className="font-funnel bg-gray-50">
+    <section className="pt-10 pb-10 font-funnel bg-gray-50">
       <div className="max-w-7xl mx-auto p-6">
         <h2 className="text-2xl md:text-4xl font-bold text-center mb-2 text-green-700">
           Ready to learn?
@@ -34,7 +34,7 @@ const Courses = () => {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 
