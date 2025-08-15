@@ -19,6 +19,7 @@ const ReviewForm = ({ setMessage, handleRatingChange, handleRatingSubmit, purcha
                 onChange={e => setMessage(e.target.value)}
                 placeholder="Write your review here..."
                 rows={4}
+                required
                 className="w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
         </div>

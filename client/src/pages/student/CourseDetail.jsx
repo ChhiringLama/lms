@@ -63,6 +63,14 @@ const CourseDetail = () => {
     }
   },[reviewCError])
 
+  useEffect(()=>{
+    if(reviewCSuccess){
+      toast.success("Review Posted")
+      setMessage("")
+      setRating("3")
+    }
+  },[reviewCSuccess])
+
   useEffect(() => {
     if (user?._id) {
       const userId = user._id;
