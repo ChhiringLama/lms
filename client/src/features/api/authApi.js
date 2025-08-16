@@ -41,7 +41,6 @@ export const authApi = createApi({
         }
       },
     }),
-
     loadUser: builder.query({
       query: () => ({
         url: "profile",
@@ -58,7 +57,6 @@ export const authApi = createApi({
         }
       },
     }),
-
     updateUser: builder.mutation({
       query: (formData) => ({
         url: "profile/update",
@@ -66,7 +64,6 @@ export const authApi = createApi({
         body: formData,
       }),
     }),
-
     logoutUser: builder.mutation({
       query: () => ({
         url: "logout",

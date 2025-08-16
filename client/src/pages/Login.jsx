@@ -27,6 +27,7 @@ const Login = () => {
   const [signupInput, setSignupInput] = useState({
     name: "",
     email: "",
+    instructorCode:"",
     passwrd: "",
   });
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
@@ -35,16 +36,8 @@ const Login = () => {
 
   const [pushActivity] = usePushActivityMutation()
 
-  const [
-    registerUser,
-    {
-      data: registerData,
-      error: registerError,
-      isLoading: registerIsLoading,
-      isSuccess: registerIsSuccess
-    }
-
-  ] = useRegisterUserMutation();
+  const [  registerUser, { data: registerData, error: registerError, isLoading: registerIsLoading, isSuccess: registerIsSuccess }] = 
+  useRegisterUserMutation();
   const [
     loginUser,
     {
@@ -126,6 +119,7 @@ const Login = () => {
                     required
                   />
                 </div>
+               
                 <div className="grid gap-3">
                   <Label htmlFor="tabs-demo-email">Email</Label>
                   <Input
@@ -145,6 +139,18 @@ const Login = () => {
                     onChange={(e) => changeInputHandler(e, "signup")}
                     type="password"
                     placeholder="******"
+                    required
+                  />
+                </div>
+                 <div className="grid gap-3">
+                  <Label htmlFor="tabs-demo-name">Instructor Code</Label>
+                  <h6 style={{fontSize:"10px"}}>Enter Instructor code if you want to sign up as Instructor</h6>
+                  <Input
+                    name="instructorCode"
+                    value={signupInput.instructorCode}
+                    onChange={(e) => changeInputHandler(e, "signup")}
+                    type="text"
+                    placeholder="Get the code by emailing us"
                     required
                   />
                 </div>

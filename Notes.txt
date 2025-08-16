@@ -191,3 +191,7 @@ instructor:
 
     jason@gmail.com
     password
+
+
+    emily@gmail.com
+    password

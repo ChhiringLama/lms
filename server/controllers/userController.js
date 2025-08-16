@@ -49,10 +49,9 @@ export const createActivity = async (req, res) => {
   }
 }
 
-
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, instructorCode } = req.body;
 
     // Check for missing fields
     if (!name || !email || !password) {
@@ -87,13 +86,24 @@ export const register = async (req, res) => {
       });
     }
 
+    // Determine user role based on instructor code
+    let role = "student";
+    if (instructorCode && instructorCode === process.env.INSTRUCTOR_CODE) {
+      role = "instructor";
+    }
+
     // Hash password and create user
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ name, email, password: hashedPassword });
+    await User.create({ 
+      name, 
+      email, 
+      password: hashedPassword,
+      role // Add the role to the user creation
+    });
 
     return res.status(201).json({
       success: true,
-      message: "Account created successfully.",
+      message: `Account created successfully as ${role}.`,
     });
 
   } catch (err) {

@@ -1,41 +1,66 @@
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { BookOpen, Users } from "lucide-react";
 
 const Lecturers = () => {
-  // Dummy data for lecturers
-  const lecturers = [
-    {
-      id: 1,
-      name: "John Doe",
-      photo: "https://via.placeholder.com/150",
-      students: 1200,
-      bio: "Expert in Web Development",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      photo: "https://via.placeholder.com/150",
-      students: 950,
-      bio: "Specialist in Graphic Design",
-    },
-    {
-      id: 3,
-      name: "Michael Brown",
-      photo: "https://via.placeholder.com/150",
-      students: 870,
-      bio: "Data Science Enthusiast",
-    },
-    {
-      id: 4,
-      name: "Emily Davis",
-      photo: "https://via.placeholder.com/150",
-      students: 780,
-      bio: "Marketing Guru",
-    },
-  ];
+  const [lecturers, setLecturers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchLecturers = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/miscellaneous/get-lecturers",
+          {
+            signal: controller.signal,
+          }
+        );
+
+        console.log(response.data);
+        setLecturers(response.data);
+      } catch (err) {
+        if (!axios.isCancel(err)) {
+          setError(err.message || "Failed to fetch lecturers");
+          console.error("Error fetching lecturers:", err);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchLecturers();
+
+    return () => controller.abort(); // Cleanup function
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
+          <p>Loading lecturers...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
+          <p className="text-red-500">Error: {error}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className=" py-16 bg-gray-50">
@@ -50,37 +75,51 @@ const Lecturers = () => {
         </div>
 
         <Swiper
+          modules={[Navigation]}
           spaceBetween={20}
           slidesPerView={1}
+          className="mySwiper"
+          navigation={true}
           breakpoints={{
             640: { slidesPerView: 2 },
             1024: { slidesPerView: 3 },
           }}
         >
-          {lecturers.map((lecturer) => (
-            <SwiperSlide key={lecturer.id}>
-              <Card className="shadow-md">
-                <CardHeader className="flex flex-col items-center">
-                  <img
-                    src={lecturer.photo}
-                    alt={lecturer.name}
-                    className="w-24 h-24 rounded-full mb-4"
-                  />
-                  <CardTitle className="text-lg font-semibold">
-                    {lecturer.name}
-                  </CardTitle>
-                  <p className="text-sm text-gray-500">{lecturer.bio}</p>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <p className="text-gray-700 font-medium">
-                    Students: {lecturer.students}
-                  </p>
-                  <Button variant="outline" className="mt-4">
-                    View Profile
-                  </Button>
-                </CardContent>
-              </Card>
-            </SwiperSlide>
+          {lecturers?.map((lecturer) => (
+        <SwiperSlide key={lecturer._id}>
+  <Card className="rounded-xl border border-gray-200 bg-white">
+    <CardHeader className="p-4">
+      <div className="flex items-center gap-4">
+        <img
+          src={lecturer.photoUrl || "/default-avatar.png"}
+          alt={lecturer.name}
+          className="w-14 h-14 rounded-full object-cover border"
+        />
+        <div>
+          <CardTitle className="text-lg font-semibold leading-tight">
+            {lecturer.name}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground truncate max-w-[180px]">
+            {lecturer.email}
+          </p>
+        </div>
+      </div>
+    </CardHeader>
+
+    <CardContent className="px-4 pb-4 flex justify-between items-center border-t pt-3">
+      <div className="flex items-center text-sm font-medium text-gray-700">
+        <Users className="h-4 w-4 mr-1 text-blue-500" />
+        <span>{lecturer.totalStudents} Students</span>
+      </div>
+      <div className="flex items-center text-sm font-medium text-gray-700">
+        <BookOpen className="h-4 w-4 mr-1 text-green-500" />
+        <span>{lecturer.courseCount} Courses</span>
+      </div>
+    </CardContent>
+  </Card>
+</SwiperSlide>
+
+
           ))}
         </Swiper>
       </div>
