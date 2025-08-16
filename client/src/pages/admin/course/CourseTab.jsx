@@ -39,13 +39,15 @@ const CourseTab = () => {
   const { data: courseByIdData, isSuccess: getCourseSuccess } =
     useGetCourseByIdQuery(courseId);
 
- const [pushActivity, {isSuccess:pushSuccess}]=usePushActivityMutation();
+  const [pushActivity, { isSuccess: pushSuccess }] = usePushActivityMutation();
 
   const [editCourse, { isLoading, error, data, isSuccess }] =
     useEditCourseMutation();
 
-  const [removeCourse, {data:removeData,  isSuccess: removeSuccess, error: removeError }] =
-    useRemoveCourseMutation();
+  const [
+    removeCourse,
+    { data: removeData, isSuccess: removeSuccess, error: removeError },
+  ] = useRemoveCourseMutation();
 
   const [publishCourse] = usePublishCourseMutation();
 
@@ -55,7 +57,7 @@ const CourseTab = () => {
     courseTitle: "",
     subTitle: "",
     description: "",
-    expectedOutcome:"",
+    expectedOutcome: "",
     category: "",
     courseLevel: "",
     coursePrice: "",
@@ -63,7 +65,7 @@ const CourseTab = () => {
   });
 
   useEffect(() => {
-    if (getCourseSuccess && courseByIdData) {
+    if (getCourseSuccess) {
       setInput({
         courseTitle: courseByIdData.course.courseTitle,
         subTitle: courseByIdData.course.subTitle,
@@ -81,7 +83,7 @@ const CourseTab = () => {
   useEffect(() => {
     if (removeSuccess) {
       toast.success("Course removed successfully");
-      navigate("/dashboard/courses")
+      navigate("/dashboard/courses");
     } else if (removeError) {
       toast.error("Course removal failed");
       console.log(removeError);
@@ -89,7 +91,7 @@ const CourseTab = () => {
   }, [removeSuccess, removeError]);
 
   const handleRemoveCourse = async () => {
-    pushActivity({action:"Removed a Course", actionDes:input?.courseTitle})
+    pushActivity({ action: "Removed a Course", actionDes: input?.courseTitle });
     await removeCourse(courseId);
   };
 
@@ -179,10 +181,9 @@ const CourseTab = () => {
             {courseByIdData?.course.isPublished ? "Unpublished" : "Publish"}
           </Button>
           <Button variant="destructive" onClick={handleRemoveCourse}>
-           <Trash2></Trash2> Remove Course
+            <Trash2></Trash2> Remove Course
           </Button>
         </div>
-     
       </CardHeader>
       <CardContent>
         <div className="space-y-4 mt-5">
@@ -191,7 +192,7 @@ const CourseTab = () => {
             <Input
               type="text"
               name="courseTitle"
-              value={input.courseTitle}
+              value={input?.courseTitle}
               onChange={changeEventHandler}
               placeholder="Ex. Mobile Programming"
             />
@@ -201,18 +202,26 @@ const CourseTab = () => {
             <Input
               type="text"
               name="subTitle"
-              value={input.subTitle}
+              value={input?.subTitle}
               onChange={changeEventHandler}
               placeholder="Ex. Learn to write the best Mobile app"
             />
           </div>
           <div>
             <Label>Description</Label>
-            <RichTextEditor input={input} setInput={setInput} formField={"description"}/>
+            <RichTextEditor
+              input={input}
+              setInput={setInput}
+              formField={"description"}
+            />
           </div>
           <div>
             <Label>Expected Outcome</Label>
-            <RichTextEditor input={input} setInput={setInput} formField={"expectedOutcome"}/>
+            <RichTextEditor
+              input={input}
+              setInput={setInput}
+              formField={"expectedOutcome"}
+            />
           </div>
           <div className="flex items-center gap-5">
             <div>
@@ -226,11 +235,25 @@ const CourseTab = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Topics</SelectLabel>
-                    <SelectItem value="Programming">Programming</SelectItem>
-                    <SelectItem value="System Design">System Design</SelectItem>
+                    <SelectItem value="Animation">Animation</SelectItem>
+                    <SelectItem value="Business">Business</SelectItem>
                     <SelectItem value="Database Management">
                       Database Management
                     </SelectItem>
+                    <SelectItem value="Economics">Economics</SelectItem>
+                    <SelectItem value="Graphic Design">
+                      Graphic Design
+                    </SelectItem>
+                    <SelectItem value="Hacking">Hacking</SelectItem>
+                    <SelectItem value="Health">Health</SelectItem>
+                    <SelectItem value="Math">Math</SelectItem>
+                    <SelectItem value="Microprocessor">
+                      Microprocessor
+                    </SelectItem>
+                    <SelectItem value="Programming">Programming</SelectItem>
+                    <SelectItem value="Science">Science</SelectItem>
+                    <SelectItem value="System Design">System Design</SelectItem>
+                    <SelectItem value="Visual Arts">Visual Arts</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -281,7 +304,10 @@ const CourseTab = () => {
             )}
           </div>
           <div className="flex items-end gap-2">
-            <Button variant="outline" onClick={() => navigate("/dashboard/courses")}>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/dashboard/courses")}
+            >
               <ArrowLeft></ArrowLeft>
               Go Back
             </Button>

@@ -93,11 +93,11 @@ const Login = () => {
     }
   }, [loginIsLoading, registerIsLoading, loginData, registerData, loginError, registerError, loginIsSuccess, registerIsSuccess])
 
-  useEffect(() => { 
-    if(userRole){
-      navigate(`/dashboard`)
-    }
-  }, [])
+  // useEffect(() => { 
+  //   if(userRole){
+  //     navigate(`/dashboard`)
+  //   }
+  // }, [userRole])
   return (
     <div className="flex items-center w-full justify-center h-screen mt-10">
       <div className="flex w-full max-w-sm flex-col gap-6">

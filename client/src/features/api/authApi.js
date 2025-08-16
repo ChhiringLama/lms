@@ -75,7 +75,6 @@ export const authApi = createApi({
       //eslint-disable-next-line
       async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
-
           dispatch(userLoggedOut());
         } catch (error) {
           console.log(error);

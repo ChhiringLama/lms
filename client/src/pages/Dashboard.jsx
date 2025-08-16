@@ -78,6 +78,8 @@ const Dashboard = () => {
     }
   }, [userRole, navigate]);
 
+
+
   // If student, show loading while redirecting
   if (userRole === "student" || isRedirecting) {
     return (
@@ -91,11 +93,7 @@ const Dashboard = () => {
       </div>
     );
   }
-
-  // Mock data - in real app, this would come from API
-
-
-
+  
 
   const { data: recentActivities, isSuccess: getAcSuccess, isLoading: getALoading } = useGetActivityQuery();
 

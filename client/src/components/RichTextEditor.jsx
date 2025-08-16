@@ -8,11 +8,7 @@ function RichTextEditor({ input, setInput, formField }) {
   };
 
   return (
-    <ReactQuill
-      theme="snow"
-      value={input[formField]}
-      onChange={handleChange}
-    />
+    <ReactQuill theme="snow" value={input[formField]} onChange={handleChange} />
   );
 }
 

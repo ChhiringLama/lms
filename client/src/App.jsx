@@ -13,13 +13,14 @@ import CourseTable from "./pages/admin/course/CourseTable";
 import Dashboard from "./pages/Dashboard";
 import AddCourse from "./pages/admin/course/AddCourse";
 import EditCourse from "./pages/admin/course/EditCourse";
-import CreateLecture from './pages/admin/lecture/CreateLecture'
+import CreateLecture from "./pages/admin/lecture/CreateLecture";
 import EditLecture from "./pages/admin/lecture/EditLecture";
 import CourseDetail from "./pages/student/CourseDetail";
 import CourseProgress from "./pages/student/CourseProgress";
 import SearchPage from "./pages/SearchPage";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
+import NotFound from "./pages/NotFound";
 
 // Simple redirect component
 const DashboardRedirect = () => {
@@ -32,6 +33,10 @@ const appRouter = createBrowserRouter([
     element: <MainLayout />,
     children: [
       // Public routes
+      {
+        path: "*",
+        element: <NotFound />,
+      },
       {
         path: "/",
         element: <HeroSection />,
@@ -60,7 +65,6 @@ const appRouter = createBrowserRouter([
         path: "/course-detail/:courseId",
         element: <CourseDetail />,
       },
-
       // Unified Dashboard Route - Both students and instructors use this
       {
         path: "/dashboard",
@@ -119,6 +123,7 @@ const appRouter = createBrowserRouter([
       },
     ],
   },
+  
 ]);
 
 function App() {

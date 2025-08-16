@@ -47,6 +47,7 @@ const Sidebar = () => {
           description: "View and edit profile"
         }
       ];
+    
     }
     return [];
   };

@@ -2,7 +2,19 @@ import { useEffect, useState } from "react";
 
 const Filter = ({ handleFilterChange }) => {
   // Fake data for categories
-  const categories = ["Programming", "Design", "Marketing", "Business"];
+  const categories = [
+  "Business",
+  "Design",
+  "Economics",
+  "Health",
+  "Marketing",
+  "Math",
+  "Microprocessor",
+  "Operating System",
+  "Politics",
+  "Programming",
+  "Science"
+];
 
   // State for selected categories and price order
   const [selectedCategories, setSelectedCategories] = useState([]);
