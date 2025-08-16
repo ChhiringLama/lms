@@ -1,5 +1,4 @@
-import { User } from "../models/userModel.js";
-export const getLecturers = async (req, res) => {
+import { User } from "../models/userModel.js";export const getLecturers = async (req, res) => {
     try {
         const topInstructors = await User.aggregate([
             // Match only instructors
@@ -8,9 +7,9 @@ export const getLecturers = async (req, res) => {
             // Lookup courses created by this instructor
             {
                 $lookup: {
-                    from: "courses", // Ensure this matches your collection name
+                    from: "courses",
                     localField: "_id",
-                    foreignField: "creator", // Changed from "instructor" to "creator"
+                    foreignField: "creator",
                     as: "taughtCourses"
                 }
             },
@@ -18,7 +17,20 @@ export const getLecturers = async (req, res) => {
             // Unwind the courses array
             { $unwind: { path: "$taughtCourses", preserveNullAndEmptyArrays: true } },
             
-            // Group and calculate total students
+            // Add enrolledStudentsCount with null check
+            {
+                $addFields: {
+                    enrolledStudentsCount: {
+                        $cond: {
+                            if: { $isArray: "$taughtCourses.enrolledStudents" },
+                            then: { $size: "$taughtCourses.enrolledStudents" },
+                            else: 0
+                        }
+                    }
+                }
+            },
+            
+            // Group and calculate totals
             {
                 $group: {
                     _id: "$_id",
@@ -26,9 +38,7 @@ export const getLecturers = async (req, res) => {
                     email: { $first: "$email" },
                     bio: { $first: "$bio" },
                     photoUrl: { $first: "$photoUrl" },
-                    totalStudents: {
-                        $sum: { $size: "$taughtCourses.enrolledStudents" } // Count students per course
-                    },
+                    totalStudents: { $sum: "$enrolledStudentsCount" },
                     courseCount: { $sum: 1 }
                 }
             },
@@ -36,29 +46,20 @@ export const getLecturers = async (req, res) => {
             // Sort by total students descending
             { $sort: { totalStudents: -1 } },
             
-            // Limit to top 10 instructors
-            { $limit: 10 },
-            
-            // Project final fields
-            {
-                $project: {
-                    _id: 1,
-                    name: 1,
-                    email: 1,
-                    bio: 1,
-                    photoUrl: 1,
-                    totalStudents: 1,
-                    courseCount: 1
-                }
-            }
+            // Limit results
+            { $limit: 10 }
         ]);
 
-        res.status(200).json(topInstructors);
+        res.status(200).json({
+            success: true,
+            data: topInstructors
+        });
+
     } catch (error) {
         console.error("Error fetching lecturers:", error);
-        res.status(400).json({ 
+        res.status(400).json({
             success: false,
-            message: error.message 
+            message: error.message
         });
     }
 };

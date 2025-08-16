@@ -149,7 +149,7 @@ const Dashboard = () => {
         />
         <Statbox
           title={"Total Sales"}
-          value={totalSales}
+          value={totalSales || 0}
           description={"Sales made"}
           txtcolor={`text-orange-600`}
           bgColor={`bg-orange-50`}
