@@ -10,6 +10,7 @@ export const authApi = createApi({
     baseUrl: BASE_USER_API,
     credentials: "include", //Sends cookies like JWT and others to the backend along with request
   }),
+  tagTypes: ["Activity"],
   endpoints: (builder) => ({
     //Function
     registerUser: builder.mutation({
@@ -72,7 +73,7 @@ export const authApi = createApi({
         method: "GET",
       }),
       //eslint-disable-next-line
-      async onQueryStarted(_, {queryFulfilled, dispatch }) {
+      async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
 
           dispatch(userLoggedOut());
@@ -81,6 +82,21 @@ export const authApi = createApi({
         }
       },
     }),
+    pushActivity: builder.mutation({
+      query: ({ action, actionDes }) => ({
+        url: "/create-activity",
+        method: "POST",
+        body: { action, actionDes }
+      }),
+      invalidatesTags: ["Activity"],
+    }),
+    getActivity:builder.query({
+      query:()=>({
+        url:`/get-activity`,
+        method:"GET"
+      }),
+      providesTags:["Activity"]
+    })
   }),
 });
 
@@ -89,5 +105,7 @@ export const {
   useLoginUserMutation,
   useLoadUserQuery,
   useUpdateUserMutation,
+  usePushActivityMutation,
+  useGetActivityQuery,
   useLogoutUserMutation,
 } = authApi;

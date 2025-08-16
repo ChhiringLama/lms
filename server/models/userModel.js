@@ -35,6 +35,12 @@ const userSchema = new mongoose.Schema(
         ref: "Course",
       },
     ],
+    activities: [
+      {
+        action: { type: String, required: true },
+        actionDes: { type: String},
+        timestamp: { type: Date, default: Date.now },
+      },],
     photoUrl: {
       type: String,
       default: "",

@@ -186,11 +186,11 @@ const CourseProgress = () => {
 
           {(currentLecture?.pdfUrl || initLecture?.pdfUrl) && (
             <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
-
               <a
                 href={currentLecture?.pdfUrl || initLecture?.pdfUrl}
                 target="_blank"
-                // rel="noopener noreferrer"
+                rel="noopener noreferrer"
+                download={`${currentLecture?._id}.pdf`}
                 className="text-blue-600 hover:text-blue-800 underline text-sm"
               >
                 <Button>

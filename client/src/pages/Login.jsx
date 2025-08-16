@@ -13,17 +13,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-import { useRegisterUserMutation } from "@/features/api/authApi";
+import { usePushActivityMutation, useRegisterUserMutation } from "@/features/api/authApi";
 import { useLoginUserMutation } from "@/features/api/authApi";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 
 const Login = () => {
-  const {userRole}=useSelector(state=>state.auth)
+  const { userRole } = useSelector(state => state.auth)
 
-  const navigate=useNavigate();
-  
+  const navigate = useNavigate();
+
   const [signupInput, setSignupInput] = useState({
     name: "",
     email: "",
@@ -31,7 +31,9 @@ const Login = () => {
   });
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
 
-  const [activeTab,setActiveTab]=useState("signup");
+  const [activeTab, setActiveTab] = useState("signup");
+
+  const [pushActivity] = usePushActivityMutation()
 
   const [
     registerUser,
@@ -39,9 +41,9 @@ const Login = () => {
       data: registerData,
       error: registerError,
       isLoading: registerIsLoading,
-      isSuccess: registerIsSuccess 
-      }
-    
+      isSuccess: registerIsSuccess
+    }
+
   ] = useRegisterUserMutation();
   const [
     loginUser,
@@ -70,26 +72,32 @@ const Login = () => {
     console.log(inputData);
   };
 
-  useEffect(()=>{
-    if(registerIsSuccess && registerData){
+  useEffect(() => {
+    if (registerIsSuccess && registerData) {
       toast.success(registerData.message || "Signup succesfull");
       setActiveTab("login")
       navigate("/login")
     }
-    if(registerError){
+    if (registerError) {
       toast.error(registerError.data.message || "Sign up failed");
     }
-    if(loginIsSuccess && loginData){
+    if (loginIsSuccess && loginData) {
       toast.success(loginIsSuccess.message || "Login succesfull");
-    
+
+      pushActivity({ action: "User Logged in", actionDes: "Logged in" })
       navigate("/dashboard")
-   
+
     }
-    if(loginError){
+    if (loginError) {
       toast.error(loginError.data.message || "Login failed");
     }
-  },[loginIsLoading, registerIsLoading, loginData, registerData, loginError, registerError, loginIsSuccess, registerIsSuccess])
+  }, [loginIsLoading, registerIsLoading, loginData, registerData, loginError, registerError, loginIsSuccess, registerIsSuccess])
 
+  useEffect(() => { 
+    if(userRole){
+      navigate(`/dashboard`)
+    }
+  }, [])
   return (
     <div className="flex items-center w-full justify-center h-screen mt-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -182,7 +190,7 @@ const Login = () => {
               </CardContent>
               <CardFooter>
                 <Button onClick={() => handleRegistration("login")}>
-                 {loginIsLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin">Loading</Loader2> : "Login"}
+                  {loginIsLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin">Loading</Loader2> : "Login"}
                 </Button>
               </CardFooter>
             </Card>

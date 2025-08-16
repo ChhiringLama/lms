@@ -10,6 +10,7 @@ import {
 import { toast } from "sonner";
 import Lecture from "./Lecture";
 import { Loader2 } from "lucide-react";
+import { usePushActivityMutation } from "@/features/api/authApi";
 
 const CreateLecture = () => {
   const [lectureTitle, setLectureTitle] = useState();
@@ -22,6 +23,9 @@ const CreateLecture = () => {
   const createLectureHandler = async () => {
     await createLecture({ lectureTitle, courseId });
   };
+
+  const [pushActivity]=usePushActivityMutation();
+
   const {
     data: lectureData,
     isLoading: lectureLoading,
@@ -32,6 +36,7 @@ const CreateLecture = () => {
   useEffect(() => {
     if (isSuccess) {
       toast.success(data.message || "Successfully created a lecture");
+      pushActivity({action:"Lecture Created", actionDes:lectureTitle})
       refetchLecture()
     } else if (error) {
       toast.error(error.data.message || "An error occured");

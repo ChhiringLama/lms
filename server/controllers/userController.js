@@ -3,6 +3,53 @@ import bcrypt from "bcrypt";
 import { generateToken } from "../utils/generateToken.js";
 import { deleteMediaCD, uploadMediaCD } from "../utils/cloudinary.js";
 
+export const getActivity = async (req, res) => {
+  try {
+    const userId = req.id;
+    const { activities } = await User.findById(userId).select("activities");
+  
+    if (!activities || activities.length <= 0) {
+      return res.status(200).json({
+        message: "No activity found",
+      })
+    }
+
+    return res.status(200).json({
+     activities
+    })
+
+  } catch (error) {
+    return res.status(400).json({
+      message: error || "An error occured"
+    })
+  }
+}
+
+export const createActivity = async (req, res) => {
+  try {
+    const { action, actionDes = "No Description" } = req.body;
+    const userId = req.id; // middleware sets this
+
+    // push activity into user model
+    await User.findByIdAndUpdate(userId, {
+      $push: {
+        activities: {
+          $each: [{ action, actionDes, createdAt: new Date() }],
+          $position: 0, // push at the beginning (optional)
+          $slice: 5     // keep only the latest 5 items
+        },
+      },
+    });
+    return res.status(201).json({ message: "Activity logged successfully" });
+
+  } catch (error) {
+    return res.status(400).json({
+      message: error || "An error occured"
+    })
+  }
+}
+
+
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;

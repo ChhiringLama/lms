@@ -29,6 +29,7 @@ import {
   useRemoveCourseMutation,
 } from "@/features/api/courseApi";
 import { toast } from "sonner";
+import { usePushActivityMutation } from "@/features/api/authApi";
 
 const CourseTab = () => {
   const navigate = useNavigate();
@@ -37,6 +38,8 @@ const CourseTab = () => {
 
   const { data: courseByIdData, isSuccess: getCourseSuccess } =
     useGetCourseByIdQuery(courseId);
+
+ const [pushActivity, {isSuccess:pushSuccess}]=usePushActivityMutation();
 
   const [editCourse, { isLoading, error, data, isSuccess }] =
     useEditCourseMutation();
@@ -86,6 +89,7 @@ const CourseTab = () => {
   }, [removeSuccess, removeError]);
 
   const handleRemoveCourse = async () => {
+    pushActivity({action:"Removed a Course", actionDes:input?.courseTitle})
     await removeCourse(courseId);
   };
 

@@ -15,6 +15,7 @@ import { AlertOctagon, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useCreateCourseMutation } from "@/features/api/courseApi";
+import { usePushActivityMutation } from "@/features/api/authApi";
 
 const AddCourse = () => {
   const [courseTitle, setCourseTitle] = useState("");
@@ -26,13 +27,15 @@ const AddCourse = () => {
   const navigate = useNavigate();
 
   const createCourseHandle = async () => {
-    if(courseTitle == " " || category == "" || coursePrice == 0){
+    if (courseTitle == " " || category == "" || coursePrice == 0) {
       toast.error("Please fill in all the input field")
-    }else{
+    } else {
       await createCourse({ courseTitle, category, coursePrice });
     }
 
   };
+
+  const [pushActivity, { isSuccess: pushSuccess }] = usePushActivityMutation();
 
   const getSelectedCategory = (value) => {
     setCategory(value);
@@ -42,6 +45,7 @@ const AddCourse = () => {
   useEffect(() => {
     if (isSuccess) {
       toast.success(data.message || "Course created");
+      pushActivity({ action: "Course Created", actionDes: courseTitle });
       navigate(-1);
     } else if (error) {
       console.log(error);
@@ -73,7 +77,7 @@ const AddCourse = () => {
             type="number"
             name="coursePrice"
             value={coursePrice}
-       
+
             onChange={(e) => setCoursePrice(e.target.value)}
           ></Input>
         </div>

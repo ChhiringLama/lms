@@ -22,13 +22,15 @@ import { useGetCreatorCourseQuery } from "@/features/api/courseApi";
 import {
   useGetTotalSalesQuery,
 } from "@/features/api/purchaseApi";
+import { useGetActivityQuery, usePushActivityMutation } from "@/features/api/authApi";
 
 const Dashboard = () => {
   const { userRole } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  //Fetch all course
+
+  //Fetch all course  
   const {
     data: instructorCourses,
     isLoading: instCLoading,
@@ -40,7 +42,7 @@ const Dashboard = () => {
   const [totalLectures, setTotalLectures] = useState("0");
   const [totalSales, setTotalSales] = useState("0");
 
-  const { data: totalSl, isSuccess: totalSlSuccess } = useGetTotalSalesQuery();
+  const { data: totalSl, isSuccess: totalSlSuccess, isLoading } = useGetTotalSalesQuery();
   useEffect(() => {
     setTotalSales(totalSl?.totalSales);
   }, [totalSlSuccess, totalSl]);
@@ -92,24 +94,14 @@ const Dashboard = () => {
 
   // Mock data - in real app, this would come from API
 
-  const recentActivities = [
-    {
-      action: "New course published",
-      course: "React Fundamentals",
-      time: "2 hours ago",
-    },
-    {
-      action: "Student enrolled",
-      course: "JavaScript Basics",
-      time: "4 hours ago",
-    },
-    {
-      action: "Lecture updated",
-      course: "Node.js Advanced",
-      time: "1 day ago",
-    },
-    { action: "Course completed", course: "HTML & CSS", time: "2 days ago" },
-  ];
+
+
+
+  const { data: recentActivities, isSuccess: getAcSuccess, isLoading: getALoading } = useGetActivityQuery();
+
+  console.log(recentActivities)
+
+
 
   return (
     <div className="space-y-6">
@@ -180,22 +172,33 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivities.map((activity, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {activity.action}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {activity.course}
-                    </p>
+
+              {getALoading ? (
+                <h4>Loading please wait</h4>
+              ) : recentActivities?.activities?.length > 0 ? (
+                recentActivities.activities.map((activity, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {activity.action}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {activity.actionDes}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      {activity.timestamp}
+                    </span>
                   </div>
-                  <span className="text-xs text-gray-400">{activity.time}</span>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>No recent activities</p>
+              )}
+
+
             </div>
           </CardContent>
         </Card>
@@ -211,28 +214,16 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <button className="w-full p-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <button className="w-full p-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                onClick={()=>{
+                  navigate(`/dashboard/courses/create`)
+                }}
+              >
                 <div className="font-medium text-gray-900 dark:text-white">
                   Create New Course
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   Start building a new course
-                </div>
-              </button>
-              <button className="w-full p-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                <div className="font-medium text-gray-900 dark:text-white">
-                  Add Lecture
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Create new course content
-                </div>
-              </button>
-              <button className="w-full p-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                <div className="font-medium text-gray-900 dark:text-white">
-                  View Analytics
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Check course performance
                 </div>
               </button>
             </div>
