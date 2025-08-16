@@ -14,7 +14,7 @@ const CourseProgress = () => {
 
   const { data, isLoading, isError, isSuccess, refetch } =
     useGetCourseProgressQuery(courseId);
-    const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const [course, setCourse] = useState([]);
   const [courseStatus, setCourseStaus] = useState([]);
@@ -26,7 +26,7 @@ const CourseProgress = () => {
   const [completeCourse, { data: markCompleteData, isSuccess: completedSuccess }] = useCompleteCourseMutation();
   const [inCompleteCourse, { data: markInCompleteData, isSuccess: inCompletedSuccess }] = useInCompleteCourseMutation();
 
-  const { user: { _id }} = useSelector((store) => store.auth);
+  const { user: { _id } } = useSelector((store) => store.auth);
   const [isCoursePurchased, { data: purchaseStatus }] =
     useIsCoursePurchasedMutation();
 
@@ -36,7 +36,7 @@ const CourseProgress = () => {
       isCoursePurchased({ courseId, userId });
     }
   }, [_id, courseId]);
-  useEffect(()=>{},[])
+  useEffect(() => { }, [])
 
   const isLectureCompleted = (lectureId) => {
     // console.log("Checking completion for lecture:", lectureId);
@@ -84,7 +84,7 @@ const CourseProgress = () => {
 
   useEffect(() => {
     console.log("Toast useEffect triggered:", { completedSuccess, inCompletedSuccess, markCompleteData, markInCompleteData });
-    
+
     if (completedSuccess) {
       console.log("Showing completion toast");
       toast.success(markCompleteData?.message || "Course marked as completed!");
@@ -130,7 +130,7 @@ const CourseProgress = () => {
 
   //   const { courseTitle } = courseDetails;
 
-  if(purchaseStatus?.purchased === false) {
+  if (purchaseStatus?.purchased === false) {
     toast.error("Unethical Activity Detected")
     navigate(`/course-detail/${courseId}`)
   }
@@ -167,15 +167,15 @@ const CourseProgress = () => {
           ) + 1
             } : ${currentLecture?.lectureTitle || initLecture?.lectureTitle
             }`}</h4>
-          
+
           {/* Lecture Description */}
           <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md border border-gray-200">
             <h5 className="font-medium text-gray-800 mb-3">Description</h5>
             <div className="text-gray-600 text-sm leading-relaxed">
               {currentLecture?.lectureDesc || initLecture?.lectureDesc ? (
                 <div
-                  dangerouslySetInnerHTML={{ 
-                    __html: currentLecture?.lectureDesc || initLecture?.lectureDesc 
+                  dangerouslySetInnerHTML={{
+                    __html: currentLecture?.lectureDesc || initLecture?.lectureDesc
                   }}
                 />
               ) : (
@@ -183,6 +183,33 @@ const CourseProgress = () => {
               )}
             </div>
           </div>
+
+          {(currentLecture?.pdfUrl || initLecture?.pdfUrl) && (
+            <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+
+              <a
+                href={currentLecture?.pdfUrl || initLecture?.pdfUrl}
+                target="_blank"
+                // rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline text-sm"
+              >
+                <Button>
+                  <svg
+                    className="w-4 h-4 text-gray-100"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  View PDF Attachment
+                </Button>
+              </a>
+            </div>
+          )}
         </div>
         {/* Right: Lecture List */}
         <div className="flex-1 w-1/3 p-6 overflow-y-auto border-l border-gray-200 bg-white">
@@ -190,12 +217,12 @@ const CourseProgress = () => {
           <h2 className="text-xl font-bold mb-4">Lectures</h2>
           <div className="mb-5">
 
-          <Button onClick={courseStatus ? handleInCompleteCourse : handleCompleteCourse}>
-            {courseStatus ?<><CheckCircle /> <span>Completed</span> </> : "Mark as Completed"}
-          </Button>
-          <Button variant="outline" className="ml-2" onClick={()=>navigate(`/course-detail/${courseId}`)}>
-             View Store Page
-          </Button>
+            <Button onClick={courseStatus ? handleInCompleteCourse : handleCompleteCourse}>
+              {courseStatus ? <><CheckCircle /> <span>Completed</span> </> : "Mark as Completed"}
+            </Button>
+            <Button variant="outline" className="ml-2" onClick={() => navigate(`/course-detail/${courseId}`)}>
+              View Store Page
+            </Button>
           </div>
           <div className="space-y-3">
             {course?.lectures?.map((lecture, index) => (

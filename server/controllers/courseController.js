@@ -80,6 +80,13 @@ export const removeCourse = async (req, res) => {
 
       for (const lecture of lecturesOfRetrivedCourse) {
         await deleteVideoCD(lecture.publicId); // Assuming deleteVideoCD is your Cloudinary helper function
+        if (lecture.publicId) {
+          await deleteVideoCD(lecture.publicId); // Delete video
+        }
+        if (lecture.pdfPublicId) {
+          await deleteMediaCD(lecture.pdfPublicId); // Delete PDF
+        }
+        
       }
 
       await Lecture.deleteMany({ _id: { $in: retrivedCrouse.lectures } });
@@ -247,7 +254,7 @@ export const getCourseLecture = async (req, res) => {
 
 export const editLecture = async (req, res) => {
   try {
-    const { lectureTitle, videoInfo, isPreviewFree, lectureDesc } = req.body;
+    const { lectureTitle, videoInfo, isPreviewFree, lectureDesc, pdfInfo } = req.body;
     console.log("Response from edit lecture to check isPreviewFree");
     console.log(req.body);
 
@@ -266,6 +273,10 @@ export const editLecture = async (req, res) => {
     if (videoInfo && lecture.publicId) {
       await deleteVideoCD(lecture.publicId);
     }
+    //Delete the PDF if new PDF was submitted.
+    if (pdfInfo && lecture.pdfPublicId) {
+      await deleteMediaCD(lecture.pdfPublicId);
+    }
 
     //Update lecture
 
@@ -275,6 +286,11 @@ export const editLecture = async (req, res) => {
     if (videoInfo) {
       lecture.videoUrl = videoInfo.videoUrl;
       lecture.publicId = videoInfo.publicId;
+    }
+
+    if (pdfInfo) {
+      lecture.pdfUrl = pdfInfo.pdfUrl;
+      lecture.pdfPublicId = pdfInfo.pdfPublicId;
     }
     // Always update isPreviewFree regardless of its value
     if (typeof isPreviewFree === "boolean") {
@@ -318,6 +334,13 @@ export const removeLecture = async (req, res) => {
     if (lecture.publicId) {
       await deleteVideoCD(lecture.publicId);
     }
+
+     //Delete the PDF of that lecture
+     if (lecture.pdfPublicId) {
+      await deleteMediaCD(lecture.pdfPublicId);
+    }
+
+
 
     //Remove the lecture reference from the related course
     //Searching lecture in lectures array, remove the lecture id form the array
@@ -470,8 +493,8 @@ export const searchCourse = async (req, res) => {
 
 export const getEnrolledCourse = async (req, res) => {
   try {
-    const {userId}=req.params;
-    
+    const { userId } = req.params;
+
     // Find the user and populate the enrolledCourses field
     const user = await User.findById(userId).populate({
       path: "enrolledCourses",
@@ -482,7 +505,7 @@ export const getEnrolledCourse = async (req, res) => {
       },
     });
 
-     if (!user) {
+    if (!user) {
       return res.status(404).json({
         message: "User not found",
       });

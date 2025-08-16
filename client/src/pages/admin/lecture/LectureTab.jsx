@@ -34,7 +34,7 @@ const LectureTab = () => {
   const [removeLecture, { isLoading: removeLoading, isSuccess: removeSuccess },] = useRemoveLectureMutation();
   const [editLecture, { isLoading: isEditLoading, isSuccess: isEditSuccess, error: editError },] = useEditLectureMutation();
   const { data: lectureData } = useGetLectureByIdQuery(lectureId, { skip: !lectureId, });
-
+  const [pdfInfo, setPdfInfo] = useState(null);
 
   const removeLectureHandler = async () => {
     await removeLecture(lectureId);
@@ -48,6 +48,7 @@ const LectureTab = () => {
       courseId,
       lectureDesc,
       lectureId,
+      pdfInfo,
       isPreviewFree: isFree,
     });
   };
@@ -85,6 +86,36 @@ const LectureTab = () => {
       }
     }
   };
+
+  const pdfChangeHandler = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      setUploadProgress(true);
+      try {
+        const res = await axios.post(`${MEDIA_API}/upload-pdf`, formData, {
+          onUploadProgress: ({ loaded, total }) => {
+            setUploadProgress(Math.round((loaded * 100) / total));
+          },
+        });
+
+        if (res.data.success) {
+          setPdfInfo({
+            pdfUrl: res.data.data.url,
+            publicId: res.data.data.public_id,
+          });
+          toast.success(res.data.message);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error?.response?.data?.message || "PDF upload failed");
+      } finally {
+        setPdfProgress(false);
+      }
+    }
+  };
+
 
   useEffect(() => {
     if (lectureData) {
@@ -164,6 +195,19 @@ const LectureTab = () => {
             ></Input>
             <h6 className="text-red-500 font-bold text-sm mt-3">{hasVideo ? "Video is already set" : ""}</h6>
           </div>
+          <div className="my-5">
+            <Label>
+              PDF (optional)
+            </Label>
+            <Input
+              type="file"
+              accept=".pdf,.pptx" 
+              className="w-fit"
+              onChange={pdfChangeHandler}
+            />
+           
+          </div>
+
           <div>
             <Switch
               id="free"

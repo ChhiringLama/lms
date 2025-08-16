@@ -16,6 +16,12 @@ const lectureSchema = new mongoose.Schema(
       type:String,
     },
     publicId: { type: String },
+    pdfUrl: {
+      type: String,
+    },
+    pdfPublicId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

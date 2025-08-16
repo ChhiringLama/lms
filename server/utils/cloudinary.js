@@ -20,6 +20,20 @@ export const uploadMediaCD = async (file) => {
   }
 };
 
+export const uploadPdfCD = async (file) => {
+  try {
+    const uploadRes = await cloudinary.uploader.upload(file, {
+      resource_type: "raw",
+      format: "pdf",
+    });
+    return uploadRes;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
+
 export const deleteMediaCD = async (publicId) => {
   try {
     await cloudinary.uploader.destroy(publicId);
