@@ -7,23 +7,22 @@ export const getActivity = async (req, res) => {
   try {
     const userId = req.id;
     const { activities } = await User.findById(userId).select("activities");
-  
+
     if (!activities || activities.length <= 0) {
       return res.status(200).json({
         message: "No activity found",
-      })
+      });
     }
 
     return res.status(200).json({
-     activities
-    })
-
+      activities,
+    });
   } catch (error) {
     return res.status(400).json({
-      message: error || "An error occured"
-    })
+      message: error || "An error occured",
+    });
   }
-}
+};
 
 export const createActivity = async (req, res) => {
   try {
@@ -36,22 +35,21 @@ export const createActivity = async (req, res) => {
         activities: {
           $each: [{ action, actionDes, createdAt: new Date() }],
           $position: 0, // push at the beginning (optional)
-          $slice: 5     // keep only the latest 5 items
+          $slice: 5, // keep only the latest 5 items
         },
       },
     });
     return res.status(201).json({ message: "Activity logged successfully" });
-
   } catch (error) {
     return res.status(400).json({
-      message: error || "An error occured"
-    })
+      message: error || "An error occured",
+    });
   }
-}
+};
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, instructorCode } = req.body;
+    const { name, email, password, forInstructor } = req.body;
 
     // Check for missing fields
     if (!name || !email || !password) {
@@ -86,26 +84,34 @@ export const register = async (req, res) => {
       });
     }
 
-    // Determine user role based on instructor code
-    let role = "student";
-    if (instructorCode && instructorCode === process.env.INSTRUCTOR_CODE) {
-      role = "instructor";
+    // Determine user role based on forInstructor checkbox
+    let role = "student"; // Default role
+    if (forInstructor) {
+      role = "pending"; // Set to pending if applying to be instructor
+
+      // Here you would send the verification email with instructor code
+      // await sendInstructorVerificationEmail(email);
     }
 
     // Hash password and create user
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ 
-      name, 
-      email, 
+    await User.create({
+      name,
+      email,
       password: hashedPassword,
-      role // Add the role to the user creation
+      role, // Add the role to the user creation
     });
+
+    // Different success messages based on role
+    const successMessage =
+      role === "pending"
+        ? "Account created! Check your email for instructor verification process."
+        : "Account created successfully as student.";
 
     return res.status(201).json({
       success: true,
-      message: `Account created successfully as ${role}.`,
+      message: successMessage,
     });
-
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -113,7 +119,6 @@ export const register = async (req, res) => {
     });
   }
 };
-
 
 export const login = async (req, res) => {
   try {
@@ -239,6 +244,64 @@ export const updateUserProfile = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to update profile",
+    });
+  }
+};
+
+export const verifyUser = async (req, res) => {
+  try {
+    const {code} = req.body;
+    const userId = req.id;
+
+      console.log({
+      inputCode: code,
+      userId,
+      typeOfInput: typeof code,
+      envCode: process.env.INSTRUCTOR_CODE,
+      typeOfEnv: typeof process.env.INSTRUCTOR_CODE,
+    });
+
+    // 1. Check if code matches .env
+    if (String(code).trim() !== String(process.env.INSTRUCTOR_CODE).trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid verification code",
+      });
+    }
+
+  
+
+    // 2. Verify user exists and is pending
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: "User is not pending verification",
+      });
+    }
+
+    // 3. Update role to instructor
+    user.role = "instructor";
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Verification successful! You are now an instructor.",
+      data: {
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "Verification failed",
     });
   }
 };

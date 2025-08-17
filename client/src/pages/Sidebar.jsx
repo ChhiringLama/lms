@@ -1,12 +1,30 @@
-import { ChartBar, BookOpen, Home, Settings, Users, FileText, GraduationCap, User, BookOpenCheck } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import {
+  ChartBar,
+  BookOpen,
+  Home,
+  Settings,
+  Users,
+  FileText,
+  GraduationCap,
+  User,
+  BookOpenCheck,
+} from "lucide-react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { Button } from "../components/ui/button";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
+
 
 const Sidebar = () => {
   const location = useLocation();
-  const { user, userRole } = useSelector(state => state.auth);
+  const { user, userRole } = useSelector((state) => state.auth);
+ 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userRole === "pending") navigate('/verification');
+  }, []);
 
   // Role-based navigation items
   const getNavigationItems = () => {
@@ -16,15 +34,14 @@ const Sidebar = () => {
           name: "Profile",
           href: "profile",
           icon: User,
-          description: "View and edit profile"
+          description: "View and edit profile",
         },
         {
           name: "My Learning",
           href: "my-learning",
           icon: BookOpenCheck,
-          description: "Track your progress"
+          description: "Track your progress",
         },
-     
       ];
     } else if (userRole === "instructor") {
       return [
@@ -32,22 +49,21 @@ const Sidebar = () => {
           name: "Dashboard",
           href: "dashboard",
           icon: Home,
-          description: "Overview and analytics"
+          description: "Overview and analytics",
         },
         {
           name: "Courses",
           href: "courses",
           icon: BookOpen,
-          description: "Manage course content"
+          description: "Manage course content",
         },
         {
           name: "Profile",
           href: "profile",
           icon: User,
-          description: "View and edit profile"
-        }
+          description: "View and edit profile",
+        },
       ];
-    
     }
     return [];
   };
@@ -63,8 +79,8 @@ const Sidebar = () => {
   };
 
   const getRoleColor = () => {
-    return userRole === "student" 
-      ? "from-blue-500 to-purple-600" 
+    return userRole === "student"
+      ? "from-blue-500 to-purple-600"
       : "from-green-500 to-emerald-600";
   };
 
@@ -87,10 +103,12 @@ const Sidebar = () => {
           {/* Header */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
-              <div className={cn(
-                "w-8 h-8 bg-gradient-to-br rounded-lg flex items-center justify-center",
-                getRoleColor()
-              )}>
+              <div
+                className={cn(
+                  "w-8 h-8 bg-gradient-to-br rounded-lg flex items-center justify-center",
+                  getRoleColor()
+                )}
+              >
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -121,13 +139,16 @@ const Sidebar = () => {
                         : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                     )}
                   >
-                    <Icon className={cn(
-                      "w-5 h-5 mr-3",
-                      isActiveRoute ? "text-gray-6100 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
-                    )} />
+                    <Icon
+                      className={cn(
+                        "w-5 h-5 mr-3",
+                        isActiveRoute
+                          ? "text-gray-6100 dark:text-blue-400"
+                          : "text-gray-500 dark:text-gray-400"
+                      )}
+                    />
                     <div className="flex flex-col items-start">
                       <span className="font-medium">{item.name}</span>
-                     
                     </div>
                   </Button>
                 </Link>
@@ -139,7 +160,10 @@ const Sidebar = () => {
           <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
             <div className="text-center">
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {userRole === "student" ? "Student Portal" : "Instructor Portal"} v1.0
+                {userRole === "student"
+                  ? "Student Portal"
+                  : "Instructor Portal"}{" "}
+                v1.0
               </p>
             </div>
           </div>

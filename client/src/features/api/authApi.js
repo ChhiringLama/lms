@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { userLoggedIn, userLoggedOut } from "../authSlice";
 
-
 const BASE_USER_API = "http://localhost:8080/api/v1/user/";
 
 export const authApi = createApi({
@@ -82,16 +81,23 @@ export const authApi = createApi({
       query: ({ action, actionDes }) => ({
         url: "/create-activity",
         method: "POST",
-        body: { action, actionDes }
+        body: { action, actionDes },
       }),
       invalidatesTags: ["Activity"],
     }),
-    getActivity:builder.query({
-      query:()=>({
-        url:`/get-activity`,
-        method:"GET"
+    getActivity: builder.query({
+      query: () => ({
+        url: `/get-activity`,
+        method: "GET",
       }),
-      providesTags:["Activity"]
+      providesTags: ["Activity"],
+    }),
+    verifyUser:builder.mutation({
+       query: (code) => ({
+        url: `/verify-user`,
+        method: "POST",
+        body: {code}
+      }),
     })
   }),
 });
@@ -104,4 +110,5 @@ export const {
   usePushActivityMutation,
   useGetActivityQuery,
   useLogoutUserMutation,
+  useVerifyUserMutation
 } = authApi;

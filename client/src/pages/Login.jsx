@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -13,31 +13,35 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-import { usePushActivityMutation, useRegisterUserMutation } from "@/features/api/authApi";
+import {
+  usePushActivityMutation,
+  useRegisterUserMutation,
+} from "@/features/api/authApi";
 import { useLoginUserMutation } from "@/features/api/authApi";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 
 const Login = () => {
-  const { userRole } = useSelector(state => state.auth)
+
 
   const navigate = useNavigate();
 
   const [signupInput, setSignupInput] = useState({
     name: "",
     email: "",
-    instructorCode:"",
-    passwrd: "",
+    forInstructor: false,
+    password: "",
   });
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
 
   const [activeTab, setActiveTab] = useState("signup");
 
-  const [pushActivity] = usePushActivityMutation()
+  const [pushActivity] = usePushActivityMutation();
 
-  const [  registerUser, { data: registerData, error: registerError, isLoading: registerIsLoading, isSuccess: registerIsSuccess }] = 
-  useRegisterUserMutation();
+  const [
+    registerUser,
+    { data: registerData,  error: registerError,  isLoading: registerIsLoading,  isSuccess: registerIsSuccess,},
+  ] = useRegisterUserMutation();
   const [
     loginUser,
     {
@@ -68,8 +72,8 @@ const Login = () => {
   useEffect(() => {
     if (registerIsSuccess && registerData) {
       toast.success(registerData.message || "Signup succesfull");
-      setActiveTab("login")
-      navigate("/login")
+      setActiveTab("login");
+      navigate("/login");
     }
     if (registerError) {
       toast.error(registerError.data.message || "Sign up failed");
@@ -77,16 +81,15 @@ const Login = () => {
     if (loginIsSuccess && loginData) {
       toast.success(loginIsSuccess.message || "Login succesfull");
 
-      pushActivity({ action: "User Logged in", actionDes: "Logged in" })
-      navigate("/dashboard")
-
+      pushActivity({ action: "User Logged in", actionDes: "Logged in" });
+      navigate("/dashboard");
     }
     if (loginError) {
       toast.error(loginError.data.message || "Login failed");
     }
-  }, [loginIsLoading, registerIsLoading, loginData, registerData, loginError, registerError, loginIsSuccess, registerIsSuccess])
+  }, [ loginIsLoading, registerIsLoading, loginData, registerData, loginError, registerError, loginIsSuccess, registerIsSuccess ]);
 
-  // useEffect(() => { 
+  // useEffect(() => {
   //   if(userRole){
   //     navigate(`/dashboard`)
   //   }
@@ -119,7 +122,7 @@ const Login = () => {
                     required
                   />
                 </div>
-               
+
                 <div className="grid gap-3">
                   <Label htmlFor="tabs-demo-email">Email</Label>
                   <Input
@@ -135,29 +138,52 @@ const Login = () => {
                   <Label htmlFor="tabs-demo-password">Password</Label>
                   <Input
                     name="password"
-                    value={signupInput.password}
+                    value={signupInput?.password}
                     onChange={(e) => changeInputHandler(e, "signup")}
                     type="password"
                     placeholder="******"
                     required
                   />
                 </div>
-                 <div className="grid gap-3">
-                  <Label htmlFor="tabs-demo-name">Instructor Code</Label>
-                  <h6 style={{fontSize:"10px"}}>Enter Instructor code if you want to sign up as Instructor</h6>
-                  <Input
-                    name="instructorCode"
-                    value={signupInput.instructorCode}
-                    onChange={(e) => changeInputHandler(e, "signup")}
-                    type="text"
-                    placeholder="Get the code by emailing us"
-                    required
-                  />
+                <div className="grid gap-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      id="instructor-checkbox"
+                      name="forInstructor"
+                      type="checkbox"
+                      checked={signupInput.forInstructor}
+                      onChange={(e) =>
+                        setSignupInput({
+                          ...signupInput,
+                          forInstructor: e.target.checked,
+                        })
+                      }
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <Label
+                      htmlFor="instructor-checkbox"
+                      className="text-sm font-medium leading-none"
+                    >
+                      Signing up as instructor?
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tick the box above if you're an instructor
+                  </p>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button disabled={registerIsLoading} onClick={() => handleRegistration("signup")}>
-                  {registerIsLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin">Please Wait</Loader2> : "Sign Up"}
+                <Button
+                  disabled={registerIsLoading}
+                  onClick={() => handleRegistration("signup")}
+                >
+                  {registerIsLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin">
+                      Please Wait
+                    </Loader2>
+                  ) : (
+                    "Sign Up"
+                  )}
                 </Button>
               </CardFooter>
             </Card>
@@ -196,7 +222,13 @@ const Login = () => {
               </CardContent>
               <CardFooter>
                 <Button onClick={() => handleRegistration("login")}>
-                  {loginIsLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin">Loading</Loader2> : "Login"}
+                  {loginIsLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin">
+                      Loading
+                    </Loader2>
+                  ) : (
+                    "Login"
+                  )}
                 </Button>
               </CardFooter>
             </Card>
