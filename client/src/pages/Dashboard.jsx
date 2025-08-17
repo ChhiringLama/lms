@@ -22,7 +22,7 @@ import { useGetCreatorCourseQuery } from "@/features/api/courseApi";
 import {
   useGetTotalSalesQuery,
 } from "@/features/api/purchaseApi";
-import { useGetActivityQuery, usePushActivityMutation } from "@/features/api/authApi";
+import { useGetActivityQuery } from "@/features/api/authApi";
 
 const Dashboard = () => {
   const { userRole } = useSelector((state) => state.auth);

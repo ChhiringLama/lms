@@ -21,6 +21,7 @@ import SearchPage from "./pages/SearchPage";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import NotFound from "./pages/NotFound";
+import Verification from "./pages/Verification";
 
 // Simple redirect component
 const DashboardRedirect = () => {
@@ -65,6 +66,11 @@ const appRouter = createBrowserRouter([
         path: "/course-detail/:courseId",
         element: <CourseDetail />,
       },
+      {
+        path: "/verification",
+        element: <Verification />,
+      },
+
       // Unified Dashboard Route - Both students and instructors use this
       {
         path: "/dashboard",
@@ -123,7 +129,6 @@ const appRouter = createBrowserRouter([
       },
     ],
   },
-  
 ]);
 
 function App() {
