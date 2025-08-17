@@ -57,7 +57,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-200 mt-8 pt-8 text-center">
           <p className="text-gray-100">
-            © 2024 Learning Management System. All rights reserved.
+            © 2025 Learning Management System. College Project
           </p>
         </div>
       </div>

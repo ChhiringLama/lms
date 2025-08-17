@@ -67,7 +67,7 @@ const Lecturers = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-10">
           <h2 className="font-funnel text-2xl md:text-4xl font-extrabold mb-6 text-gray-800">
-            Browse Lecturers
+            Top Lecturers
           </h2>
           <p className="text-gray-600">
             Meet our top lecturers with the highest number of students.
