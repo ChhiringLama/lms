@@ -29,7 +29,7 @@ const ReviewsSection = ({ reviewsList }) => {
 
     return (
         <section className="mt-10">
-            <h2 className="font-funnel text-2xl font-bold mb-2 text-gray-800">
+            <h2 className="font-funnel text-2xl font-semibold mb-2 text-gray-800">
                 Student Reviews
             </h2>
             <div className={`${style.reviewList}`}>

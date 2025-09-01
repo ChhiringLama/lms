@@ -14,6 +14,7 @@ import { Label } from "../components/ui/label";
 import { Loader2 } from "lucide-react";
 import {
   useLoadUserQuery,
+  usePushActivityMutation,
   useUpdateUserMutation,
 } from "../features/api/authApi";
 import { useState, useEffect } from "react";
@@ -22,15 +23,10 @@ const Profile = () => {
   const { data, isLoading, refetch } = useLoadUserQuery();
   const user = data?.user;
 
-  const [
-    updateUser,
-    {
-      //eslint-disable-next-line
-      data: updateUserData,
-      isLoading: updateUserIsLoading,
-      error: updateUserError,
-      isSuccess,
-    },
+  const [pushActivity, {isSuccess: pushSuccess}]= usePushActivityMutation();
+
+  const [updateUser,{ //eslint-disable-next-line 
+  data: updateUserData, isLoading: updateUserIsLoading, error: updateUserError, isSuccess},
   ] = useUpdateUserMutation();
 
   const [name, setName] = useState("");
@@ -51,6 +47,8 @@ const Profile = () => {
     formData.append("bio", bio);
     formData.append("profilePhoto", profilePhoto);
     await updateUser(formData);
+
+    pushActivity({ action: "Edited profile", actionDes: "Profile detail changed" })
   };
 
   useEffect(() => {

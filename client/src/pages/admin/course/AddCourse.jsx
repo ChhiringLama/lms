@@ -87,16 +87,30 @@ const AddCourse = () => {
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Category</SelectLabel>
-                <SelectItem value="Programming">Programming</SelectItem>
-                <SelectItem value="System Design">System Design</SelectItem>
-                <SelectItem value="Database Management">
-                  Database Management
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
+           <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Topics</SelectLabel>
+                    <SelectItem value="Animation">Animation</SelectItem>
+                    <SelectItem value="Business">Business</SelectItem>
+                    <SelectItem value="Database Management">
+                      Database Management
+                    </SelectItem>
+                    <SelectItem value="Economics">Economics</SelectItem>
+                    <SelectItem value="Graphic Design">
+                      Graphic Design
+                    </SelectItem>
+                    <SelectItem value="Hacking">Hacking</SelectItem>
+                    <SelectItem value="Health">Health</SelectItem>
+                    <SelectItem value="Math">Math</SelectItem>
+                    <SelectItem value="Microprocessor">
+                      Microprocessor
+                    </SelectItem>
+                    <SelectItem value="Programming">Programming</SelectItem>
+                    <SelectItem value="Science">Science</SelectItem>
+                    <SelectItem value="System Design">System Design</SelectItem>
+                    <SelectItem value="Visual Arts">Visual Arts</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
           </Select>
         </div>
         <div className="flex items-center gap-2">

@@ -1,4 +1,3 @@
-
 import { Course } from "../models/courseModel.js";
 import { User } from "../models/userModel.js";
 import { Lecture } from "../models/lectureModel.js";
@@ -7,12 +6,13 @@ import {
   deleteVideoCD,
   uploadMediaCD,
 } from "../utils/cloudinary.js";
+import { getRecommendedCourses } from "../utils/recoalgo.js";
 
 export const createCourse = async (req, res) => {
   try {
     const { courseTitle, category, coursePrice } = req.body;
 
-    console.log(courseTitle, category, req.id);
+   
     if (!courseTitle || !category || !coursePrice) {
       return res.status(400).json({
         message: "Course title , price and category are required.",
@@ -86,7 +86,6 @@ export const removeCourse = async (req, res) => {
         if (lecture.pdfPublicId) {
           await deleteMediaCD(lecture.pdfPublicId); // Delete PDF
         }
-        
       }
 
       await Lecture.deleteMany({ _id: { $in: retrivedCrouse.lectures } });
@@ -121,7 +120,7 @@ export const editCourse = async (req, res) => {
     } = req.body;
     const courseThumbnail = req.file; // File from the request
 
-    console.log(expectedOutcome);
+
 
     let course = await Course.findById(courseId);
 
@@ -165,7 +164,7 @@ export const editCourse = async (req, res) => {
       new: true,
     });
 
-    console.log(course);
+
 
     return res.status(200).json({
       course,
@@ -254,7 +253,8 @@ export const getCourseLecture = async (req, res) => {
 
 export const editLecture = async (req, res) => {
   try {
-    const { lectureTitle, videoInfo, isPreviewFree, lectureDesc, pdfInfo } = req.body;
+    const { lectureTitle, videoInfo, isPreviewFree, lectureDesc, pdfInfo } =
+      req.body;
     console.log("Response from edit lecture to check isPreviewFree");
     console.log(req.body);
 
@@ -335,12 +335,10 @@ export const removeLecture = async (req, res) => {
       await deleteVideoCD(lecture.publicId);
     }
 
-     //Delete the PDF of that lecture
-     if (lecture.pdfPublicId) {
+    //Delete the PDF of that lecture
+    if (lecture.pdfPublicId) {
       await deleteMediaCD(lecture.pdfPublicId);
     }
-
-
 
     //Remove the lecture reference from the related course
     //Searching lecture in lectures array, remove the lecture id form the array
@@ -364,7 +362,7 @@ export const removeLecture = async (req, res) => {
 export const getLectureById = async (req, res) => {
   try {
     const { lectureId } = req.params;
-    console.log(req.params);
+   
     if (!lectureId) {
       return res.status(400).json({
         message: "Lecture Id is required!",
@@ -382,7 +380,7 @@ export const getLectureById = async (req, res) => {
       lecture,
     });
   } catch (error) {
-    console.log(error);
+   
     return res.status(500).json({
       message: "Failed to get lecture by id",
     });
@@ -476,7 +474,7 @@ export const searchCourse = async (req, res) => {
       .populate({ path: "creator", select: "name photoUrl" })
       .sort(sortOptions);
 
-    console.log(courses);
+  
 
     return res.status(200).json({
       success: true,
@@ -515,11 +513,30 @@ export const getEnrolledCourse = async (req, res) => {
       success: true,
       enrolledCourses: user.enrolledCourses || [],
     });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({
       message: "An error occurred while searching for courses.",
+      error,
+    });
+  }
+};
+
+export const getSimilarCourses = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    // const baseCourse=Course.findById(courseId);
+    const resultarray = await getRecommendedCourses(courseId);
+
+
+    res.status(200).json({
+      message: "Successfull",
+      resultarray
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "An error occured while fetching similar courses",
       error,
     });
   }

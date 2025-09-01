@@ -19,12 +19,17 @@ import { Button } from "@/components/ui/button";
 import style from "./CourseDetail.module.css";
 import { toast } from "sonner";
 
-import { useCreateReviewMutation, useGetAllReviewQuery } from "@/features/api/reviewApi";
+import {
+  useCreateReviewMutation,
+  useGetAllReviewQuery,
+} from "@/features/api/reviewApi";
 import Footer from "../Footer";
 import ReviewForm from "./ReviewForm";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@radix-ui/react-select";
 import ReviewsSection from "./ReviewLists";
+import { useGetSimilarCourseQuery } from "@/features/api/courseApi";
+import SimilarCourses from "./SimilarCourses";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
@@ -46,16 +51,30 @@ const CourseDetail = () => {
   const [rating, setRating] = useState("3");
   const [message, setMessage] = useState();
 
+  //getting similar courses 
+  const {data:similarCData, isSuccess : similarCSuccess, isLoading:similarCLoading}=useGetSimilarCourseQuery(courseId);
+
+  // useEffect(()=>{
+  //   if(similarCourses && similarCSuccess){
+
+  //   }
+  // },[similarCSuccess])
 
   //Getting the Reviews
-  const { data: retrivedReviewData, isSuccess: reviewGSuccess, isLoading: reviewLoading } = useGetAllReviewQuery(courseId)
+  const {
+    data: retrivedReviewData,
+    isSuccess: reviewGSuccess,
+    isLoading: reviewLoading,
+  } = useGetAllReviewQuery(courseId);
   const [reviewsList, setReviewsList] = useState();
+
+
   useEffect(() => {
     if (reviewGSuccess) {
-      console.log(retrivedReviewData)
-      setReviewsList(retrivedReviewData?.foundReview?.reviews)
+      console.log(retrivedReviewData);
+      setReviewsList(retrivedReviewData?.foundReview?.reviews);
     }
-  }, [reviewGSuccess])
+  }, [reviewGSuccess]);
 
   const handleContinueCourse = () => {
     if (purchased) {
@@ -265,8 +284,22 @@ const CourseDetail = () => {
               handleRatingSubmit={handleRatingSubmit}
             />
 
-            {reviewLoading ? <h5>Loading PLease wait</h5> : <ReviewsSection reviewsList={reviewsList} />}
+            {reviewLoading ? (
+              <h5>Loading PLease wait</h5>
+            ) : (
+              <ReviewsSection reviewsList={reviewsList} />
+            )}
 
+            {/* Similar Courses with Recommendation algorithm */}
+            <div className="mt-6">
+              <h2 className="font-funnel mb-2 text-2xl font-semibold text-gray-800">
+                Simlar Courses
+              </h2>
+
+              {
+                similarCLoading ? <CourseSkeleton /> : <SimilarCourses allCourses={similarCData.resultarray}/>
+              }
+            </div>
           </div>
         </div>
 
@@ -359,6 +392,21 @@ const CourseDetail = () => {
       </div>
 
       <Footer />
+    </div>
+  );
+};
+
+const CourseSkeleton = () => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="animate-pulse bg-white rounded-lg shadow p-4">
+          <div className="h-40 bg-gray-200 rounded mb-4" />
+          <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+          <div className="h-8 bg-gray-200 rounded w-1/3" />
+        </div>
+      ))}
     </div>
   );
 };

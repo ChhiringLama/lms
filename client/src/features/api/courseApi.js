@@ -59,7 +59,12 @@ export const courseApi = createApi({
       }),
       providesTags: ["Home-Courses"],
     }),
-
+    getSimilarCourse: builder.query({
+      query: (courseId) => ({
+        url: `/similar-courses/${courseId}`,
+        method: "GET",
+      }),
+    }),
     editCourse: builder.mutation({
       query: ({ formData, courseId }) => ({
         url: `/${courseId}`,
@@ -112,7 +117,7 @@ export const courseApi = createApi({
         isPreviewFree,
         courseId,
         lectureId,
-        pdfInfo
+        pdfInfo,
       }) => ({
         url: `/${courseId}/lecture/${lectureId}`,
         method: "PUT",
@@ -157,5 +162,6 @@ export const {
   usePublishCourseMutation,
   useGetPublishedCourseQuery,
   useGetSearchedCoursesQuery,
-  useGetEnrolledCourseQuery
+  useGetEnrolledCourseQuery,
+  useGetSimilarCourseQuery,
 } = courseApi;
