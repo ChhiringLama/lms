@@ -51,8 +51,12 @@ const CourseDetail = () => {
   const [rating, setRating] = useState("3");
   const [message, setMessage] = useState();
 
-  //getting similar courses 
-  const {data:similarCData, isSuccess : similarCSuccess, isLoading:similarCLoading}=useGetSimilarCourseQuery(courseId);
+  //getting similar courses
+  const {
+    data: similarCData,
+    isSuccess: similarCSuccess,
+    isLoading: similarCLoading,
+  } = useGetSimilarCourseQuery(courseId);
 
   // useEffect(()=>{
   //   if(similarCourses && similarCSuccess){
@@ -67,7 +71,6 @@ const CourseDetail = () => {
     isLoading: reviewLoading,
   } = useGetAllReviewQuery(courseId);
   const [reviewsList, setReviewsList] = useState();
-
 
   useEffect(() => {
     if (reviewGSuccess) {
@@ -212,7 +215,7 @@ const CourseDetail = () => {
                 </svg>
                 <span className="text-white text-sm">Resources Available</span>
               </div>
-
+                
               <div className="flex items-center space-x-2">
                 <svg
                   className="w-5 h-5 text-purple-400"
@@ -296,9 +299,11 @@ const CourseDetail = () => {
                 Simlar Courses
               </h2>
 
-              {
-                similarCLoading ? <CourseSkeleton /> : <SimilarCourses allCourses={similarCData.resultarray}/>
-              }
+              {similarCLoading ? (
+                <CourseSkeleton />
+              ) : (
+                <SimilarCourses allCourses={similarCData.resultarray} />
+              )}
             </div>
           </div>
         </div>
