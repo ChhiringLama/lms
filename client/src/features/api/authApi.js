@@ -78,10 +78,10 @@ export const authApi = createApi({
       },
     }),
     pushActivity: builder.mutation({
-      query: ({ action, actionDes }) => ({
+      query: (actionBody) => ({
         url: "/create-activity",
         method: "POST",
-        body: { action, actionDes },
+        body:actionBody,
       }),
       invalidatesTags: ["Activity"],
     }),

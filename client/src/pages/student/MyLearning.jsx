@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { useLoadUserQuery } from "@/features/api/authApi";
+import { useLoadUserQuery, usePushActivityMutation } from "@/features/api/authApi";
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { useGetEnrolledCourseQuery } from "@/features/api/courseApi";
 
 const MyLearning = () => {
 
+  const [pushActivity]=usePushActivityMutation()
   const { data, isLoading } = useLoadUserQuery();
   const user = data?.user;
 
@@ -116,6 +117,7 @@ const LearningCard = ({ course }) => {
 
   const selectCourseHandler=(courseId)=>{
       navigate(`/dashboard/course-progress/${courseId}`);
+      pushActivity({action:"Viewed a Course", relatedCourse: _id})
   }
 
 return(

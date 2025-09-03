@@ -26,14 +26,29 @@ export const getActivity = async (req, res) => {
 
 export const createActivity = async (req, res) => {
   try {
-    const { action, actionDes = "No Description" } = req.body;
+    const {
+      action,
+      actionDes = "No Description",
+      relatedLesson = null,
+      relatedCourse = null,
+    } = req.body;
     const userId = req.id; // middleware sets this
+
+    console.log(req.body)
 
     // push activity into user model
     await User.findByIdAndUpdate(userId, {
       $push: {
         activities: {
-          $each: [{ action, actionDes, createdAt: new Date() }],
+          $each: [
+            {
+              action,
+              actionDes,
+              relatedCourse: relatedCourse || null, // optional
+              relatedLesson: relatedLesson || null, // match schema
+              createdAt: new Date(),
+            },
+          ],
           $position: 0, // push at the beginning (optional)
           $slice: 5, // keep only the latest 5 items
         },
@@ -250,10 +265,10 @@ export const updateUserProfile = async (req, res) => {
 
 export const verifyUser = async (req, res) => {
   try {
-    const {code} = req.body;
+    const { code } = req.body;
     const userId = req.id;
 
-      console.log({
+    console.log({
       inputCode: code,
       userId,
       typeOfInput: typeof code,
@@ -268,8 +283,6 @@ export const verifyUser = async (req, res) => {
         message: "Invalid verification code",
       });
     }
-
-  
 
     // 2. Verify user exists and is pending
     const user = await User.findById(userId);

@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from "react-router-dom";
-
 import {
   Card,
   CardContent,
@@ -25,8 +24,7 @@ import {
 } from "@/features/api/reviewApi";
 import Footer from "../Footer";
 import ReviewForm from "./ReviewForm";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@radix-ui/react-select";
+
 import ReviewsSection from "./ReviewLists";
 import { useGetSimilarCourseQuery } from "@/features/api/courseApi";
 import SimilarCourses from "./SimilarCourses";
@@ -44,17 +42,15 @@ const CourseDetail = () => {
   const { user } = useSelector((store) => store?.auth);
   const [isCoursePurchased, { data: purchaseStatus }] =
     useIsCoursePurchasedMutation();
-  const [
-    createReview,
-    { data: reviewData, isSuccess: reviewCSuccess, error: reviewCError },
-  ] = useCreateReviewMutation();
+  const [createReview, { isSuccess: reviewCSuccess, error: reviewCError }] =
+    useCreateReviewMutation();
   const [rating, setRating] = useState("3");
   const [message, setMessage] = useState();
 
   //getting similar courses
   const {
     data: similarCData,
-    isSuccess: similarCSuccess,
+    // isSuccess: similarCSuccess,
     isLoading: similarCLoading,
   } = useGetSimilarCourseQuery(courseId);
 
@@ -215,7 +211,7 @@ const CourseDetail = () => {
                 </svg>
                 <span className="text-white text-sm">Resources Available</span>
               </div>
-                
+
               <div className="flex items-center space-x-2">
                 <svg
                   className="w-5 h-5 text-purple-400"

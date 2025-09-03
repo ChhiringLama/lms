@@ -35,18 +35,19 @@ const CourseTab = () => {
   const navigate = useNavigate();
   const params = useParams();
   const courseId = params.courseId;
+  // const [pushActivity, {isSuccess : pushSuccess}]= usePushActivityMutation();
 
   const { data: courseByIdData, isSuccess: getCourseSuccess } =
     useGetCourseByIdQuery(courseId);
 
-  const [pushActivity, { isSuccess: pushSuccess }] = usePushActivityMutation();
+  const [pushActivity] = usePushActivityMutation();
 
   const [editCourse, { isLoading, error, data, isSuccess }] =
     useEditCourseMutation();
 
   const [
     removeCourse,
-    { data: removeData, isSuccess: removeSuccess, error: removeError },
+    { isSuccess: removeSuccess, error: removeError },
   ] = useRemoveCourseMutation();
 
   const [publishCourse] = usePublishCourseMutation();
@@ -88,7 +89,7 @@ const CourseTab = () => {
       toast.error("Course removal failed");
       console.log(removeError);
     }
-  }, [removeSuccess, removeError]);
+  }, [removeSuccess, removeError, navigate]);
 
   const handleRemoveCourse = async () => {
     pushActivity({ action: "Removed a Course", actionDes: input?.courseTitle });
@@ -113,6 +114,10 @@ const CourseTab = () => {
   const publishStatusHandler = async (action) => {
     try {
       const response = await publishCourse({ courseId, query: action });
+      await pushActivity({
+        action: `${action ? 'Published' : "Unpublished" } a course`,
+        actionDes: `Action performed on ${input.courseTitle}`,
+      });
       if (response.data) {
         toast.success(response.data.message);
       }

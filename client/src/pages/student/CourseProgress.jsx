@@ -1,4 +1,9 @@
-import { useCompleteCourseMutation, useGetCourseProgressQuery, useInCompleteCourseMutation, useUpdateLectureProgressMutation } from "@/features/api/courseProgressApi";
+import {
+  useCompleteCourseMutation,
+  useGetCourseProgressQuery,
+  useInCompleteCourseMutation,
+  useUpdateLectureProgressMutation,
+} from "@/features/api/courseProgressApi";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +13,7 @@ import { CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useIsCoursePurchasedMutation } from "@/features/api/purchaseApi";
 import { useSelector } from "react-redux";
+import { usePushActivityMutation } from "@/features/api/authApi";
 
 const CourseProgress = () => {
   const { courseId } = useParams();
@@ -16,17 +22,24 @@ const CourseProgress = () => {
     useGetCourseProgressQuery(courseId);
   const navigate = useNavigate();
 
+  const [pushActivity] = usePushActivityMutation();
   const [course, setCourse] = useState([]);
   const [courseStatus, setCourseStaus] = useState([]);
   const [currentLecture, setCurrentLecture] = useState(0);
   const [courseProgress, setCourseProgress] = useState([]);
   const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 
-  const [updateLectureProgress] = useUpdateLectureProgressMutation()
-  const [completeCourse, { data: markCompleteData, isSuccess: completedSuccess }] = useCompleteCourseMutation();
-  const [inCompleteCourse, { data: markInCompleteData, isSuccess: inCompletedSuccess }] = useInCompleteCourseMutation();
+  const [updateLectureProgress] = useUpdateLectureProgressMutation();
+  const [
+    completeCourse,
+    { data: markCompleteData, isSuccess: completedSuccess },
+  ] = useCompleteCourseMutation();
+  const [
+    inCompleteCourse,
+    { data: markInCompleteData, isSuccess: inCompletedSuccess },
+  ] = useInCompleteCourseMutation();
 
-  const { user: { _id } } = useSelector((store) => store.auth);
+  const { user: { _id }} = useSelector((store) => store.auth);
   const [isCoursePurchased, { data: purchaseStatus }] =
     useIsCoursePurchasedMutation();
 
@@ -34,9 +47,10 @@ const CourseProgress = () => {
     if (_id) {
       const userId = _id;
       isCoursePurchased({ courseId, userId });
+    
     }
   }, [_id, courseId]);
-  useEffect(() => { }, [])
+  useEffect(() => {}, []);
 
   const isLectureCompleted = (lectureId) => {
     // console.log("Checking completion for lecture:", lectureId);
@@ -57,8 +71,13 @@ const CourseProgress = () => {
       return;
     }
 
-    console.log("Updating progress for lecture:", lectureId);
+    pushActivity({
+      action: `Completed lecture`,
+      relatedCourse:courseId,
+      relatedLesson: currentLecture?._id || initLecture?._id,
+    });
 
+    console.log("Updating progress for lecture:", lectureId);
     try {
       setIsUpdatingProgress(true);
       const result = await updateLectureProgress({ courseId, lectureId });
@@ -71,7 +90,7 @@ const CourseProgress = () => {
     } finally {
       setIsUpdatingProgress(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (data || isSuccess) {
@@ -81,9 +100,13 @@ const CourseProgress = () => {
     }
   }, [data, isSuccess]);
 
-
   useEffect(() => {
-    console.log("Toast useEffect triggered:", { completedSuccess, inCompletedSuccess, markCompleteData, markInCompleteData });
+    console.log("Toast useEffect triggered:", {
+      completedSuccess,
+      inCompletedSuccess,
+      markCompleteData,
+      markInCompleteData,
+    });
 
     if (completedSuccess) {
       console.log("Showing completion toast");
@@ -93,11 +116,18 @@ const CourseProgress = () => {
 
     if (inCompletedSuccess) {
       console.log("Showing incompletion toast");
-      toast.success(markInCompleteData?.message || "Course marked as incomplete!");
+      toast.success(
+        markInCompleteData?.message || "Course marked as incomplete!"
+      );
       refetch();
     }
-  }, [completedSuccess, inCompletedSuccess, markCompleteData, markInCompleteData, refetch])
-
+  }, [
+    completedSuccess,
+    inCompletedSuccess,
+    markCompleteData,
+    markInCompleteData,
+    refetch,
+  ]);
 
   const handleCompleteCourse = async () => {
     try {
@@ -108,7 +138,7 @@ const CourseProgress = () => {
       toast.error("Failed to mark course as completed");
       console.error("Error completing course:", error);
     }
-  }
+  };
 
   const handleInCompleteCourse = async () => {
     try {
@@ -119,8 +149,7 @@ const CourseProgress = () => {
       toast.error("Failed to mark course as incomplete");
       console.error("Error incompleting course:", error);
     }
-  }
-
+  };
 
   const initLecture = currentLecture || (course.lectures && course.lectures[0]);
   console.log(initLecture);
@@ -131,8 +160,8 @@ const CourseProgress = () => {
   //   const { courseTitle } = courseDetails;
 
   if (purchaseStatus?.purchased === false) {
-    toast.error("Unethical Activity Detected")
-    navigate(`/course-detail/${courseId}`)
+    toast.error("Unethical Activity Detected");
+    navigate(`/course-detail/${courseId}`);
   }
 
   return (
@@ -151,7 +180,11 @@ const CourseProgress = () => {
               controls
               controlsList="nodownload noremoteplayback"
               onPlay={() =>
-                handleLectureProgress(currentLecture?._id || initLecture?._id)
+                pushActivity({
+                  action: `Started lecture`,
+                  relatedCourse:courseId,
+                  relatedLesson: currentLecture?._id || initLecture?._id,
+                })
               }
               onEnded={() =>
                 handleLectureProgress(currentLecture?._id || initLecture?._id)
@@ -162,11 +195,13 @@ const CourseProgress = () => {
               Your browser does not support the video tag.
             </video>
           </div>
-          <h4 className="text-xl mt-4 font-semibold mb-4">{`Lecture ${course?.lectures?.findIndex(
-            (lec) => lec?._id === (currentLecture?._id || initLecture?._id)
-          ) + 1
-            } : ${currentLecture?.lectureTitle || initLecture?.lectureTitle
-            }`}</h4>
+          <h4 className="text-xl mt-4 font-semibold mb-4">{`Lecture ${
+            course?.lectures?.findIndex(
+              (lec) => lec?._id === (currentLecture?._id || initLecture?._id)
+            ) + 1
+          } : ${
+            currentLecture?.lectureTitle || initLecture?.lectureTitle
+          }`}</h4>
 
           {/* Lecture Description */}
           <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md border border-gray-200">
@@ -175,11 +210,14 @@ const CourseProgress = () => {
               {currentLecture?.lectureDesc || initLecture?.lectureDesc ? (
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: currentLecture?.lectureDesc || initLecture?.lectureDesc
+                    __html:
+                      currentLecture?.lectureDesc || initLecture?.lectureDesc,
                   }}
                 />
               ) : (
-                <p className="text-gray-500 italic">No description available for this lecture.</p>
+                <p className="text-gray-500 italic">
+                  No description available for this lecture.
+                </p>
               )}
             </div>
           </div>
@@ -216,11 +254,24 @@ const CourseProgress = () => {
           <h1>{course?.courseTitle || "Course Title"}</h1>
           <h2 className="text-xl font-bold mb-4">Lectures</h2>
           <div className="mb-5">
-
-            <Button onClick={courseStatus ? handleInCompleteCourse : handleCompleteCourse}>
-              {courseStatus ? <><CheckCircle /> <span>Completed</span> </> : "Mark as Completed"}
+            <Button
+              onClick={
+                courseStatus ? handleInCompleteCourse : handleCompleteCourse
+              }
+            >
+              {courseStatus ? (
+                <>
+                  <CheckCircle /> <span>Completed</span>{" "}
+                </>
+              ) : (
+                "Mark as Completed"
+              )}
             </Button>
-            <Button variant="outline" className="ml-2" onClick={() => navigate(`/course-detail/${courseId}`)}>
+            <Button
+              variant="outline"
+              className="ml-2"
+              onClick={() => navigate(`/course-detail/${courseId}`)}
+            >
               View Store Page
             </Button>
           </div>
@@ -229,10 +280,11 @@ const CourseProgress = () => {
               <div
                 key={lecture._id}
                 onClick={() => handleSelectLecture(lecture)}
-                className={`cursor-pointer p-3 rounded-lg transition-colors ${lecture?._id === (currentLecture?._id || initLecture?._id)
-                  ? "bg-blue-100 border-blue-300"
-                  : "bg-gray-50 hover:bg-gray-100"
-                  }`}
+                className={`cursor-pointer p-3 rounded-lg transition-colors ${
+                  lecture?._id === (currentLecture?._id || initLecture?._id)
+                    ? "bg-blue-100 border-blue-300"
+                    : "bg-gray-50 hover:bg-gray-100"
+                }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
